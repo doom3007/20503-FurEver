@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.Font?>
+
+<BorderPane style="-fx-font-family: 'Segoe UI', Tahoma, Arial, sans-serif;" xmlns:fx="http://javafx.com/fxml" fx:controller="com.furever.client.ui.UserDashboardController">
+    <top>
+        <HBox spacing="10" alignment="CENTER_LEFT" style="-fx-background-color: #3498db; -fx-padding: 10;">
+            <Label text="FurEver" style="-fx-font-size: 20px; -fx-font-weight: bold; -fx-text-fill: white;"/>
+            <Region HBox.hgrow="ALWAYS"/>
+            <Label fx:id="welcomeLabel" style="-fx-text-fill: white; -fx-font-size: 14px;"/>
+            <Button text="הוסף מודעה" onAction="#handleAddPet" style="-fx-background-color: #27ae60; -fx-text-fill: white;"/>
+            <Button text="התנתק" onAction="#handleLogout" style="-fx-background-color: #e74c3c; -fx-text-fill: white;"/>
+        </HBox>
+    </top>
+    
+    <left>
+        <VBox spacing="10" style="-fx-background-color: #ecf0f1; -fx-padding: 10;" prefWidth="250">
+            <Label text="חיפוש וסינון" style="-fx-font-weight: bold; -fx-font-size: 14px;"/>
+            
+            <HBox spacing="10" alignment="CENTER" nodeOrientation="RIGHT_TO_LEFT">
+                <Label text="שם החיה:" prefWidth="100"/>
+                <TextField fx:id="searchNameField" HBox.hgrow="ALWAYS" nodeOrientation="RIGHT_TO_LEFT"/>
+            </HBox>
+            <HBox spacing="10" alignment="CENTER" nodeOrientation="RIGHT_TO_LEFT">
+                <Label text="קטגוריה:" prefWidth="100"/>
+                <ComboBox fx:id="categoryComboBox" HBox.hgrow="ALWAYS" nodeOrientation="RIGHT_TO_LEFT"/>
+            </HBox>
+            <HBox spacing="10" alignment="CENTER" nodeOrientation="RIGHT_TO_LEFT">
+                <Label text="גיל מקסימלי:" prefWidth="100"/>
+                <TextField fx:id="maxAgeField" HBox.hgrow="ALWAYS" nodeOrientation="RIGHT_TO_LEFT"/>
+            </HBox>
+            <HBox spacing="10" alignment="CENTER" nodeOrientation="RIGHT_TO_LEFT">
+                <Label text="מין:" prefWidth="100"/>
+                <ComboBox fx:id="genderComboBox" HBox.hgrow="ALWAYS" nodeOrientation="RIGHT_TO_LEFT"/>
+            </HBox>
+            
+            <Button text="חפש" onAction="#handleSearch" style="-fx-background-color: #3498db; -fx-text-fill: white;"/>
+            <Button text="נקה סינון" onAction="#handleClearFilter" style="-fx-background-color: #95a5a6; -fx-text-fill: white;"/>
+            
+            <Region VBox.vgrow="ALWAYS"/>
+        </VBox>
+    </left>
+    
+    <center>
+        <TabPane fx:id="mainTabPane" VBox.vgrow="ALWAYS">
+            <Tab text="חיות מחמד" closable="false">
+                <TableView fx:id="petsTableView" VBox.vgrow="ALWAYS" nodeOrientation="RIGHT_TO_LEFT">
+                    <columns>
+                        <TableColumn fx:id="nameColumn" text="שם" prefWidth="120"/>
+                        <TableColumn fx:id="categoryColumn" text="קטגוריה" prefWidth="100"/>
+                        <TableColumn fx:id="ageColumn" text="גיל" prefWidth="60"/>
+                        <TableColumn fx:id="genderColumn" text="מין" prefWidth="60"/>
+                        <TableColumn fx:id="statusColumn" text="סטטוס" prefWidth="100"/>
+                        <TableColumn fx:id="dateColumn" text="תאריך פרסום" prefWidth="100"/>
+                    </columns>
+                </TableView>
+            </Tab>
+            <Tab text="הבקשות שלי" closable="false">
+                <TableView fx:id="requestsTableView" VBox.vgrow="ALWAYS" nodeOrientation="RIGHT_TO_LEFT">
+                    <columns>
+                        <TableColumn fx:id="requestPetIdColumn" text="מזהה חיה" prefWidth="60"/>
+                        <TableColumn fx:id="requestPetColumn" text="חיית מחמד" prefWidth="150"/>
+                        <TableColumn fx:id="requestOwnerColumn" text="בעלים" prefWidth="120"/>
+                        <TableColumn fx:id="requesterNameColumn" text="מבקש" prefWidth="120"/>
+                        <TableColumn fx:id="requestStatusColumn" text="סטטוס" prefWidth="100"/>
+                        <TableColumn fx:id="requestDateColumn" text="תאריך" prefWidth="120"/>
+                    </columns>
+                </TableView>
+            </Tab>
+        </TabPane>
+    </center>
+    
+    <bottom>
+        <VBox spacing="10" style="-fx-background-color: #ecf0f1; -fx-padding: 10;">
+            <HBox spacing="10" alignment="CENTER">
+                <Button fx:id="refreshButton" text="רענן" onAction="#handleRefresh" prefWidth="80" style="-fx-background-color: #3498db; -fx-text-fill: white;"/>
+                <Button fx:id="viewDetailsButton" text="צפה בפרטים" onAction="#handleViewDetails" prefWidth="120" style="-fx-background-color: #3498db; -fx-text-fill: white;"/>
+                <Button fx:id="viewRequestDetailsButton" text="פרטי בקשה" onAction="#handleViewRequestDetails" prefWidth="120" style="-fx-background-color: #9b59b6; -fx-text-fill: white;"/>
+                <Button fx:id="approveRequestButton" text="אשר בקשה" onAction="#handleApproveRequest" prefWidth="120" style="-fx-background-color: #27ae60; -fx-text-fill: white;"/>
+                <Button fx:id="rejectRequestButton" text="דחה בקשה" onAction="#handleRejectRequest" prefWidth="120" style="-fx-background-color: #e67e22; -fx-text-fill: white;"/>
+            </HBox>
+            <TextArea fx:id="statusLabel" editable="false" wrapText="true" prefRowCount="2" style="-fx-control-inner-background: #ecf0f1; -fx-text-fill: #7f8c8d; -fx-font-size: 11px; -fx-border-color: transparent;"/>
+        </VBox>
+    </bottom>
+</BorderPane>

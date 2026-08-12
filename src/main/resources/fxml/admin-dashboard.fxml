@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.Font?>
+
+<BorderPane style="-fx-font-family: 'Segoe UI', Tahoma, Arial, sans-serif;" xmlns:fx="http://javafx.com/fxml" fx:controller="com.furever.client.ui.AdminDashboardController">
+    <top>
+        <HBox spacing="10" alignment="CENTER_LEFT" style="-fx-background-color: #8e44ad; -fx-padding: 10;">
+            <Label text="FurEver - ניהול" style="-fx-font-size: 20px; -fx-font-weight: bold; -fx-text-fill: white;"/>
+            <Region HBox.hgrow="ALWAYS"/>
+            <Label fx:id="welcomeLabel" style="-fx-text-fill: white; -fx-font-size: 14px;"/>
+            <Button text="התנתק" onAction="#handleLogout" style="-fx-background-color: #e74c3c; -fx-text-fill: white;"/>
+        </HBox>
+    </top>
+    
+    <left>
+        <VBox spacing="10" style="-fx-background-color: #ecf0f1; -fx-padding: 10;" prefWidth="200">
+            <Label text="תפריט ניהול" style="-fx-font-weight: bold; -fx-font-size: 14px;"/>
+            
+            <Button text="ניהול משתמשים" onAction="#handleUsersTab" style="-fx-background-color: #9b59b6; -fx-text-fill: white;"/>
+            <Button text="ניהול חיות מחמד" onAction="#handlePetsTab" style="-fx-background-color: #9b59b6; -fx-text-fill: white;"/>
+            <Button text="בקשות אימוץ" onAction="#handleRequestsTab" style="-fx-background-color: #9b59b6; -fx-text-fill: white;"/>
+            
+            <Region VBox.vgrow="ALWAYS"/>
+        </VBox>
+    </left>
+    
+    <center>
+        <TabPane fx:id="mainTabPane">
+            <Tab text="משתמשים" closable="false">
+                    <VBox spacing="10" style="-fx-padding: 10;">
+                        <TableView fx:id="usersTableView" VBox.vgrow="ALWAYS" nodeOrientation="RIGHT_TO_LEFT">
+                            <columns>
+                                <TableColumn fx:id="userIdColumn" text="מזהה" prefWidth="60"/>
+                                <TableColumn fx:id="usernameColumn" text="שם משתמש" prefWidth="100"/>
+                                <TableColumn fx:id="fullNameColumn" text="שם מלא" prefWidth="120"/>
+                                <TableColumn fx:id="emailColumn" text="אימייל" prefWidth="150"/>
+                                <TableColumn fx:id="phoneColumn" text="טלפון" prefWidth="100"/>
+                                <TableColumn fx:id="isAdminColumn" text="מנהל" prefWidth="60"/>
+                                <TableColumn fx:id="regDateColumn" text="תאריך הרשמה" prefWidth="100"/>
+                            </columns>
+                        </TableView>
+                        <VBox spacing="10">
+                            <HBox spacing="10">
+                                <Button text="רענן" onAction="#handleRefreshUsers" prefWidth="80" style="-fx-background-color: #3498db; -fx-text-fill: white;"/>
+                            </HBox>
+                            <TextArea fx:id="usersStatusLabel" editable="false" wrapText="true" prefRowCount="2" style="-fx-control-inner-background: #ecf0f1; -fx-text-fill: #7f8c8d; -fx-font-size: 11px; -fx-border-color: transparent;"/>
+                        </VBox>
+                    </VBox>
+            </Tab>
+            
+            <Tab text="חיות מחמד" closable="false">
+                <VBox spacing="10" style="-fx-padding: 10;">
+                    <TableView fx:id="adminPetsTableView" VBox.vgrow="ALWAYS" nodeOrientation="RIGHT_TO_LEFT">
+                        <columns>
+                            <TableColumn fx:id="adminPetIdColumn" text="מזהה" prefWidth="60"/>
+                            <TableColumn fx:id="adminPetNameColumn" text="שם" prefWidth="100"/>
+                            <TableColumn fx:id="adminPetCategoryColumn" text="קטגוריה" prefWidth="100"/>
+                            <TableColumn fx:id="adminPetAgeColumn" text="גיל" prefWidth="60"/>
+                            <TableColumn fx:id="adminPetStatusColumn" text="סטטוס" prefWidth="100"/>
+                            <TableColumn fx:id="adminPetOwnerColumn" text="בעלים" prefWidth="120"/>
+                        </columns>
+                    </TableView>
+                    <VBox spacing="10">
+                        <HBox spacing="10">
+                            <Button text="רענן" onAction="#handleRefreshPets" prefWidth="80" style="-fx-background-color: #3498db; -fx-text-fill: white;"/>
+                            <Button text="סמן כאומץ" onAction="#handleMarkAdopted" prefWidth="100" style="-fx-background-color: #27ae60; -fx-text-fill: white;"/>
+                            <Button text="מחק מודעה" onAction="#handleDeletePet" prefWidth="100" style="-fx-background-color: #e74c3c; -fx-text-fill: white;"/>
+                        </HBox>
+                        <TextArea fx:id="petsStatusLabel" editable="false" wrapText="true" prefRowCount="2" style="-fx-control-inner-background: #ecf0f1; -fx-text-fill: #7f8c8d; -fx-font-size: 11px; -fx-border-color: transparent;"/>
+                    </VBox>
+                </VBox>
+            </Tab>
+            
+            <Tab text="בקשות אימוץ" closable="false">
+                <VBox spacing="10" style="-fx-padding: 10;">
+                    <TableView fx:id="requestsTableView" VBox.vgrow="ALWAYS" nodeOrientation="RIGHT_TO_LEFT">
+                        <columns>
+                            <TableColumn fx:id="requestIdColumn" text="מזהה" prefWidth="60"/>
+                            <TableColumn fx:id="requestPetIdColumn" text="מזהה חיה" prefWidth="60"/>
+                            <TableColumn fx:id="requestPetColumn" text="חיית מחמד" prefWidth="100"/>
+                            <TableColumn fx:id="requesterColumn" text="מבקש" prefWidth="120"/>
+                            <TableColumn fx:id="requestOwnerColumn" text="בעלים" prefWidth="120"/>
+                            <TableColumn fx:id="requestStatusColumn" text="סטטוס" prefWidth="100"/>
+                            <TableColumn fx:id="requestDateColumn" text="תאריך" prefWidth="100"/>
+                        </columns>
+                    </TableView>
+                    <VBox spacing="10">
+                        <HBox spacing="10">
+                            <Button text="רענן" onAction="#handleRefreshRequests" prefWidth="80" style="-fx-background-color: #3498db; -fx-text-fill: white;"/>
+                            <Button text="צפה בפרטים" onAction="#handleViewRequestDetails" prefWidth="100" style="-fx-background-color: #9b59b6; -fx-text-fill: white;"/>
+                            <Button text="מחק בקשה" onAction="#handleDeleteRequest" prefWidth="100" style="-fx-background-color: #e74c3c; -fx-text-fill: white;"/>
+                        </HBox>
+                        <HBox spacing="10">
+                            <Button text="קבע כממתינה" onAction="#handleSetPending" prefWidth="120" style="-fx-background-color: #95a5a6; -fx-text-fill: white;"/>
+                            <Button text="קבע כמאושרת" onAction="#handleSetApproved" prefWidth="120" style="-fx-background-color: #27ae60; -fx-text-fill: white;"/>
+                            <Button text="קבע כנדחית" onAction="#handleSetRejected" prefWidth="120" style="-fx-background-color: #e67e22; -fx-text-fill: white;"/>
+                        </HBox>
+                        <TextArea fx:id="requestsStatusLabel" editable="false" wrapText="true" prefRowCount="2" style="-fx-control-inner-background: #ecf0f1; -fx-text-fill: #7f8c8d; -fx-font-size: 11px; -fx-border-color: transparent;"/>
+                    </VBox>
+                </VBox>
+            </Tab>
+        </TabPane>
+    </center>
+</BorderPane>

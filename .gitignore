@@ -1,0 +1,39 @@
+# Compiled files
+target/
+*.class
+*.jar
+
+# Maven
+.mvn/
+pom.xml.tag
+pom.xml.releaseBackup
+pom.xml.versionsBackup
+dependency-reduced-pom.xml
+
+# IDE
+.idea/
+.vscode/
+.settings/
+*.iml
+.project
+.classpath
+
+# OS
+Thumbs.db
+.DS_Store
+
+# Logs
+*.log
+
+# Temp files
+*.tmp
+*.swp
+*~
+temp_package
+
+# Database backups
+*.bak
+*.sql.backup
+
+# Production
+furever-production.zip

@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<VBox spacing="15" style="-fx-background-color: #f5f5f5;" xmlns:fx="http://javafx.com/fxml" 
+      fx:controller="com.furever.client.ui.AdoptionRequestController">
+    <padding>
+        <Insets bottom="20.0" left="20.0" right="20.0" top="20.0"/>
+    </padding>
+    
+    <Label text="בקשת אימוץ" style="-fx-font-size: 20px; -fx-font-weight: bold; -fx-text-fill: #2c3e50;">
+        <VBox.margin>
+            <Insets bottom="10.0"/>
+        </VBox.margin>
+    </Label>
+    
+    <Label fx:id="petNameLabel" style="-fx-font-size: 14px; -fx-text-fill: #3498db;"/>
+    
+    <VBox spacing="10" style="-fx-background-color: white; -fx-background-radius: 10; -fx-padding: 20;">
+        <HBox spacing="10" alignment="CENTER" nodeOrientation="RIGHT_TO_LEFT">
+            <Label text="שם מלא:" prefWidth="80"/>
+            <TextField fx:id="requesterNameField" HBox.hgrow="ALWAYS" nodeOrientation="RIGHT_TO_LEFT"/>
+        </HBox>
+        <HBox spacing="10" alignment="CENTER" nodeOrientation="RIGHT_TO_LEFT">
+            <Label text="טלפון:" prefWidth="80"/>
+            <TextField fx:id="requesterPhoneField" HBox.hgrow="ALWAYS" nodeOrientation="RIGHT_TO_LEFT"/>
+        </HBox>
+        <HBox spacing="10" alignment="CENTER" nodeOrientation="RIGHT_TO_LEFT">
+            <Label text="אימייל:" prefWidth="80"/>
+            <TextField fx:id="requesterEmailField" HBox.hgrow="ALWAYS" nodeOrientation="RIGHT_TO_LEFT"/>
+        </HBox>
+        <Label text="הודעה לבעלים:"/>
+        <TextArea fx:id="messageArea" prefRowCount="4" nodeOrientation="RIGHT_TO_LEFT"/>
+        
+        <Label fx:id="messageLabel" style="-fx-text-fill: #e74c3c; -fx-font-size: 12px;"/>
+        
+        <HBox spacing="10" alignment="CENTER">
+            <Button text="שלח בקשה" onAction="#handleSubmit" prefWidth="120" style="-fx-background-color: #27ae60; -fx-text-fill: white; -fx-font-weight: bold;"/>
+            <Button text="ביטול" onAction="#handleCancel" prefWidth="120" style="-fx-background-color: #95a5a6; -fx-text-fill: white;"/>
+        </HBox>
+    </VBox>
+</VBox>

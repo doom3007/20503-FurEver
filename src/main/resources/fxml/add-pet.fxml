@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<VBox spacing="15" style="-fx-background-color: #f5f5f5; -fx-font-family: 'Segoe UI', Tahoma, Arial, sans-serif;" xmlns:fx="http://javafx.com/fxml" 
+      fx:controller="com.furever.client.ui.AddPetController">
+    <padding>
+        <Insets bottom="20.0" left="20.0" right="20.0" top="20.0"/>
+    </padding>
+    
+    <Label text="הוספת מודעת מסירה" style="-fx-font-size: 20px; -fx-font-weight: bold; -fx-text-fill: #2c3e50;">
+        <VBox.margin>
+            <Insets bottom="10.0"/>
+        </VBox.margin>
+    </Label>
+    
+    <ScrollPane fitToWidth="true">
+        <VBox spacing="10" style="-fx-background-color: white; -fx-background-radius: 10; -fx-padding: 20;">
+            <HBox spacing="10" alignment="CENTER" nodeOrientation="RIGHT_TO_LEFT">
+                <Label text="שם החיה:" prefWidth="100"/>
+                <TextField fx:id="nameField" HBox.hgrow="ALWAYS" nodeOrientation="RIGHT_TO_LEFT"/>
+            </HBox>
+            <HBox spacing="10" alignment="CENTER" nodeOrientation="RIGHT_TO_LEFT">
+                <Label text="קטגוריה:" prefWidth="100"/>
+                <ComboBox fx:id="categoryComboBox" HBox.hgrow="ALWAYS" nodeOrientation="RIGHT_TO_LEFT"/>
+            </HBox>
+            <HBox spacing="10" alignment="CENTER" nodeOrientation="RIGHT_TO_LEFT">
+                <Label text="גיל:" prefWidth="100"/>
+                <TextField fx:id="ageField" HBox.hgrow="ALWAYS" nodeOrientation="RIGHT_TO_LEFT"/>
+            </HBox>
+            <HBox spacing="10" alignment="CENTER" nodeOrientation="RIGHT_TO_LEFT">
+                <Label text="מין:" prefWidth="100"/>
+                <ComboBox fx:id="genderComboBox" HBox.hgrow="ALWAYS" nodeOrientation="RIGHT_TO_LEFT"/>
+            </HBox>
+            <Label text="תיאור החיה:"/>
+            <TextArea fx:id="descriptionArea" prefRowCount="3" nodeOrientation="RIGHT_TO_LEFT"/>
+            <HBox spacing="10" alignment="CENTER" nodeOrientation="RIGHT_TO_LEFT">
+                <Label text="נתיב לתמונה:" prefWidth="100"/>
+                <TextField fx:id="imagePathField" HBox.hgrow="ALWAYS" nodeOrientation="RIGHT_TO_LEFT"/>
+            </HBox>
+            
+            <Label text="פרטי בעלים" style="-fx-font-weight: bold;"/>
+            <HBox spacing="10" alignment="CENTER" nodeOrientation="RIGHT_TO_LEFT">
+                <Label text="שם הבעלים:" prefWidth="100"/>
+                <TextField fx:id="ownerNameField" HBox.hgrow="ALWAYS" nodeOrientation="RIGHT_TO_LEFT"/>
+            </HBox>
+            <HBox spacing="10" alignment="CENTER" nodeOrientation="RIGHT_TO_LEFT">
+                <Label text="טלפון:" prefWidth="100"/>
+                <TextField fx:id="ownerPhoneField" HBox.hgrow="ALWAYS" nodeOrientation="RIGHT_TO_LEFT"/>
+            </HBox>
+            <HBox spacing="10" alignment="CENTER" nodeOrientation="RIGHT_TO_LEFT">
+                <Label text="אימייל:" prefWidth="100"/>
+                <TextField fx:id="ownerEmailField" HBox.hgrow="ALWAYS" nodeOrientation="RIGHT_TO_LEFT"/>
+            </HBox>
+            
+            <Label fx:id="messageLabel" style="-fx-text-fill: #e74c3c; -fx-font-size: 12px;"/>
+            
+            <HBox spacing="10" alignment="CENTER">
+                <Button text="שמור" onAction="#handleSave" prefWidth="120" style="-fx-background-color: #27ae60; -fx-text-fill: white; -fx-font-weight: bold;"/>
+                <Button text="ביטול" onAction="#handleCancel" prefWidth="120" style="-fx-background-color: #95a5a6; -fx-text-fill: white;"/>
+            </HBox>
+        </VBox>
+    </ScrollPane>
+</VBox>
