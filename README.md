@@ -8,7 +8,7 @@ Users can view available pets, publish pets for adoption, and send adoption requ
 - **Client**: JavaFX with Java 17
 - **Server**: Java's built-in HTTP server with REST API
 - **Database**: MySQL 8.0+
-- **Build**: Maven (using local mvnd - Maven Daemon for faster builds)
+- **Build**: (Apache for portability) Maven (using local mvn - Maven Daemon for faster builds)
 - **Architecture**: Client-Server with HTTP communication
 - **Authentication**: JWT (JSON Web Tokens) for secure API access
 - **Security**: BCrypt for password hashing
@@ -87,7 +87,7 @@ run-client.bat      # Start the client application
 
 ### Manual Build with Maven
 ```cmd
-installations\maven-mvnd-1.0.6-windows-amd64\bin\mvnd.cmd clean install
+installations\apache-maven-3.9.16\bin\mvn.cmd clean install
 ```
 
 ### Running the Server
@@ -97,7 +97,7 @@ java -jar target\furever-server.jar
 
 ### Running the Client
 ```cmd
-installations\maven-mvnd-1.0.6-windows-amd64\bin\mvnd.cmd javafx:run
+installations\apache-maven-3.9.16\bin\mvn.cmd javafx:run
 ```
 
 ## Default Credentials
