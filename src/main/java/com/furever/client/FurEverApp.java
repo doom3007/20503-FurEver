@@ -9,6 +9,11 @@ import javafx.stage.Stage;
 
 import java.io.IOException;
 
+/**
+ * Main application class for FurEver pet adoption system
+ * Manages the JavaFX application lifecycle, user authentication state, and screen navigation
+ * Provides static methods for screen switching and authentication management
+ */
 public class FurEverApp extends Application {
     
     private static Stage primaryStage;

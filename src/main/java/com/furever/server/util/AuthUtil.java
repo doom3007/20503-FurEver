@@ -5,6 +5,11 @@ import com.sun.net.httpserver.HttpExchange;
 
 import java.io.IOException;
 
+/**
+ * Utility class for authorization and authentication management
+ * Provides functions for checking user permissions and sending appropriate error responses
+ * Supports checking admin permissions, ownership, and sending appropriate HTTP responses
+ */
 public class AuthUtil {
     
     /**

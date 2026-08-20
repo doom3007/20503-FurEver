@@ -16,6 +16,11 @@ import java.nio.charset.StandardCharsets;
 import java.time.LocalDate;
 import java.util.Map;
 
+/**
+ * HTTP client for API communication with the FurEver server
+ * Handles all HTTP requests (GET, POST, PUT, DELETE) with JWT authentication
+ * Manages connection timeouts, error handling, and response parsing
+ */
 @SuppressWarnings("deprecation")
 public class HttpClient {
     private static final String BASE_URL = "http://localhost:8080/api";
@@ -111,7 +116,12 @@ public class HttpClient {
 
             if (responseCode >= 400) {
                 if (responseCode == 401) {
-                    throw new IOException("הפעולה נכשלה - ההתחברות פגה (החיבור לאתחול את השרת)");
+
+                    if (responseBody.contains("פרטי התחברות לא תקינים") || responseBody.contains("authentication failed")) {
+                        throw new IOException("שם משתמש או סיסמה שגויים");
+                    } else {
+                        throw new IOException("ההתחברות פגה - אנא התחבר מחדש");
+                    }
                 } else if (responseCode == 403) {
                     throw new IOException("אין לך הרשאה לבצע פעולה זו");
                 } else {

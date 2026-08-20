@@ -89,6 +89,13 @@ public class PetDAO {
         return pets;
     }
     
+    /**
+     * Check if a user owns a specific pet
+     * Used for authorization checks to ensure users can only modify their own pets
+     * @param userEmail Email address of the user to check
+     * @param petID ID of the pet to check ownership for
+     * @return true if the user owns the pet, false otherwise
+     */
     public boolean doesUserOwnPet(String userEmail, int petID) throws SQLException {
         String query = "SELECT COUNT(*) FROM Pet WHERE petID = ? AND ownerEmail = ?";
         
@@ -106,6 +113,16 @@ public class PetDAO {
         return false;
     }
     
+    /**
+     * Search for pets with optional filters
+     * Dynamically builds SQL query based on provided parameters
+     * Only includes search criteria that are not null/empty
+     * @param name Pet name to search for (partial match)
+     * @param categoryID Category ID to filter by
+     * @param maxAge Maximum age to include (inclusive)
+     * @param gender Gender to filter by
+     * @return List of pets matching the search criteria
+     */
     public List<Pet> searchPets(String name, Integer categoryID, Integer maxAge, String gender) throws SQLException {
         List<Pet> pets = new ArrayList<>();
         StringBuilder query = new StringBuilder(
@@ -233,7 +250,6 @@ public class PetDAO {
             
             boolean result = pstmt.executeUpdate() > 0;
 
-            // If pet is marked as adopted, reject all pending requests for this pet
             if (result && status.equals("אומצה")) {
                 String rejectQuery = "UPDATE AdoptionRequest SET requestStatus = 'נדחתה' WHERE petID = ? AND requestStatus = 'נשלחה'";
                 try (PreparedStatement rejectPstmt = conn.prepareStatement(rejectQuery)) {
@@ -246,6 +262,13 @@ public class PetDAO {
         }
     }
     
+    /**
+     * Extract pet data from ResultSet row
+     * Maps database columns to Pet object properties including category information
+     * @param rs ResultSet containing pet data with category join
+     * @return Pet object populated with data from ResultSet
+     * @throws SQLException if database access error occurs
+     */
     private Pet extractPetFromResultSet(ResultSet rs) throws SQLException {
         Pet pet = new Pet();
         pet.setPetID(rs.getInt("petID"));

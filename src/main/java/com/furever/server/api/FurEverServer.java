@@ -25,6 +25,11 @@ import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * Main HTTP server class for the FurEver application
+ * Manages the REST API endpoints and handles HTTP requests
+ * Uses Java's built-in HTTP server with JWT authentication
+ */
 @SuppressWarnings("unchecked")
 public class FurEverServer {
     private com.sun.net.httpserver.HttpServer server;
@@ -66,6 +71,11 @@ public class FurEverServer {
         System.out.println("Use this code during registration to create an admin account");
     }
     
+    /**
+     * Generate a random 8-character admin code for user registration
+     * Uses cryptographically secure random number generator
+     * @return Random admin code consisting of uppercase letters and digits
+     */
     private String generateAdminCode() {
         SecureRandom random = new SecureRandom();
         String chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
@@ -154,6 +164,13 @@ public class FurEverServer {
         return params;
     }
     
+    /**
+     * Extract user email from JWT token in Authorization header
+     * Validates token before extraction
+     * @param exchange HTTP exchange containing Authorization header
+     * @return User email from token
+     * @throws IOException if token is invalid or missing
+     */
     private String getUserEmailFromToken(HttpExchange exchange) throws IOException {
         String token = JWTUtil.extractToken(exchange);
         if (token == null || !JWTUtil.validateToken(token)) {
@@ -162,6 +179,12 @@ public class FurEverServer {
         return JWTUtil.extractEmail(token);
     }
     
+    /**
+     * HTTP handler for pet-related endpoints
+     * Routes requests to appropriate handler methods based on HTTP method and path
+     * Handles GET (search, by ID, by category, all), POST (add), PUT (update, status), DELETE operations
+     * Requires authentication for all operations except GET
+     */
     class PetHandler implements HttpHandler {
         @Override
         public void handle(HttpExchange exchange) throws IOException {
@@ -325,6 +348,11 @@ public class FurEverServer {
         }
     }
     
+    /**
+     * HTTP handler for category-related endpoints
+     * Provides read-only access to pet categories
+     * Supports GET request to retrieve all available categories
+     */
     class CategoryHandler implements HttpHandler {
         @Override
         public void handle(HttpExchange exchange) throws IOException {
@@ -350,6 +378,12 @@ public class FurEverServer {
         }
     }
     
+    /**
+     * HTTP handler for adoption request endpoints
+     * Manages adoption requests with role-based access control
+     * Admin users can access all requests, regular users only their own
+     * Supports GET (all, by ID, by user, for user), POST (create), PUT (approve, reject, status), DELETE operations
+     */
     class AdoptionRequestHandler implements HttpHandler {
         @Override
         public void handle(HttpExchange exchange) throws IOException {
@@ -617,6 +651,12 @@ public class FurEverServer {
         }
     }
     
+    /**
+     * HTTP handler for user-related endpoints
+     * Manages user accounts with admin-only access for listing users
+     * Supports public registration and admin-only user listing
+     * Admin code validation for admin account creation during registration
+     */
     class UserHandler implements HttpHandler {
         @Override
         public void handle(HttpExchange exchange) throws IOException {
@@ -682,6 +722,12 @@ public class FurEverServer {
         }
     }
     
+    /**
+     * HTTP handler for authentication endpoints
+     * Handles user login and JWT token generation
+     * Supports POST request for user authentication
+     * Returns user data and JWT token upon successful authentication
+     */
     class AuthHandler implements HttpHandler {
         @Override
         public void handle(HttpExchange exchange) throws IOException {

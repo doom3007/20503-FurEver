@@ -1,7 +1,6 @@
 package com.furever.client.ui;
 
 import com.furever.client.FurEverApp;
-import com.furever.client.communication.HttpClient;
 import com.furever.client.logic.AdoptionRequestClientService;
 import com.furever.client.logic.PetClientService;
 import com.furever.client.logic.UserClientService;
@@ -15,12 +14,19 @@ import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.control.TableRow;
 import java.io.IOException;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Timer;
 import java.util.TimerTask;
 
+/**
+ * Controller class for admin dashboard interface
+ * Manages functionality for admin dashboard including:
+ * - User management: viewing list of all registered users
+ * - Pet management: viewing, deleting inappropriate ads, updating status to adopted
+ * - Adoption request management: approving, rejecting, changing status, deleting requests
+ * - Full access to all system information (admin privileges)
+ * Automatic session validity checking and redirecting to login on session expiration
+ */
 public class AdminDashboardController {
     
     @FXML
@@ -110,7 +116,6 @@ public class AdminDashboardController {
     private UserClientService userClientService;
     private PetClientService petClientService;
     private AdoptionRequestClientService adoptionRequestClientService;
-    private HttpClient httpClient;
     
     private ObservableList<User> usersList;
     private ObservableList<Pet> petsList;
@@ -122,7 +127,6 @@ public class AdminDashboardController {
         this.userClientService = new UserClientService();
         this.petClientService = new PetClientService();
         this.adoptionRequestClientService = new AdoptionRequestClientService();
-        this.httpClient = new HttpClient();
         
         this.usersList = FXCollections.observableArrayList();
         this.petsList = FXCollections.observableArrayList();
@@ -203,11 +207,7 @@ public class AdminDashboardController {
             usersList.addAll(users);
             UIUtils.showInfo(usersStatusLabel, "נטענו " + users.size() + " משתמשים");
         } catch (IOException e) {
-            if (e.getMessage().contains("התחברות פגה")) {
-                UIUtils.showError(usersStatusLabel, "ההתחברות פגה - אנא התחבר מחדש");
-            } else {
-                UIUtils.showError(usersStatusLabel, "שגיאה בטעינת משתמשים: " + e.getMessage());
-            }
+            UIUtils.showError(usersStatusLabel, e.getMessage());
         }
     }
     
@@ -219,11 +219,7 @@ public class AdminDashboardController {
             petsList.addAll(pets);
             UIUtils.showInfo(petsStatusLabel, "נטענו " + pets.size() + " חיות מחמד");
         } catch (IOException e) {
-            if (e.getMessage().contains("התחברות פגה")) {
-                UIUtils.showError(petsStatusLabel, "ההתחברות פגה - אנא התחבר מחדש");
-            } else {
-                UIUtils.showError(petsStatusLabel, "שגיאה בטעינת חיות מחמד: " + e.getMessage());
-            }
+            UIUtils.showError(petsStatusLabel, e.getMessage());
         }
     }
     
@@ -235,11 +231,7 @@ public class AdminDashboardController {
             requestsList.addAll(requests);
             UIUtils.showInfo(requestsStatusLabel, "נטענו " + requests.size() + " בקשות");
         } catch (IOException e) {
-            if (e.getMessage().contains("התחברות פגה")) {
-                UIUtils.showError(requestsStatusLabel, "ההתחברות פגה - אנא התחבר מחדש");
-            } else {
-                UIUtils.showError(requestsStatusLabel, "שגיאה בטעינת בקשות: " + e.getMessage());
-            }
+            UIUtils.showError(requestsStatusLabel, e.getMessage());
         }
     }
     
@@ -283,11 +275,8 @@ public class AdminDashboardController {
         }
         
         try {
-            Map<String, String> statusUpdate = new HashMap<>();
-            statusUpdate.put("status", "אומצה");
-            String result = httpClient.put("/pets/" + selectedPet.getPetID() + "/status",
-                statusUpdate, String.class);
-            if (result != null && (result.contains("בהצלחה") || result.contains("עודכן"))) {
+            boolean success = petClientService.updatePetStatus(selectedPet.getPetID(), "אומצה");
+            if (success) {
                 petsStatusLabel.setStyle("-fx-text-fill: #27ae60;");
                 petsStatusLabel.setText("הסטטוס עודכן בהצלחה");
                 loadPets();
@@ -316,8 +305,8 @@ public class AdminDashboardController {
         alert.showAndWait().ifPresent(response -> {
             if (response == ButtonType.OK) {
                 try {
-                    String result = httpClient.delete("/pets/" + selectedPet.getPetID(), String.class);
-                    if (result != null && (result.contains("successfully") || result.contains("בהצלחה"))) {
+                    boolean success = petClientService.deletePet(selectedPet.getPetID());
+                    if (success) {
                         petsStatusLabel.setStyle("-fx-text-fill: #27ae60;");
                         petsStatusLabel.setText("המודעה נמחקה בהצלחה");
                         loadPets();
@@ -463,32 +452,7 @@ public class AdminDashboardController {
     }
     
     private void showRequestDetails(AdoptionRequest selectedRequest) {
-        Alert alert = new Alert(Alert.AlertType.INFORMATION);
-        alert.setTitle("פרטי בקשה");
-        alert.setHeaderText("בקשה מספר: " + selectedRequest.getRequestID());
-
-        String details = String.format(
-            "חיית מחמד: %s (מזהה: %d)\n" +
-            "בעלים: %s\n" +
-            "מבקש: %s\n" +
-            "טלפון מבקש: %s\n" +
-            "אימייל מבקש: %s\n" +
-            "הודעה: %s\n" +
-            "סטטוס: %s\n" +
-            "תאריך: %s",
-            selectedRequest.getPetName(),
-            selectedRequest.getPetID(),
-            selectedRequest.getOwnerName(),
-            selectedRequest.getRequesterName(),
-            selectedRequest.getRequesterPhone(),
-            selectedRequest.getRequesterEmail(),
-            selectedRequest.getMessage() != null ? selectedRequest.getMessage() : "אין הודעה",
-            selectedRequest.getRequestStatus(),
-            selectedRequest.getRequestDate()
-        );
-
-        alert.setContentText(details);
-        alert.showAndWait();
+        UIUtils.showRequestDetails(selectedRequest);
     }
     
     private void handleViewPetDetails(Pet pet) {
@@ -504,26 +468,13 @@ public class AdminDashboardController {
     }
     
     private void startSessionChecker() {
-        sessionCheckTimer = new Timer(true);
-        sessionCheckTimer.scheduleAtFixedRate(new TimerTask() {
-            @Override
-            public void run() {
-                try {
-                    userClientService.getAllUsers();
-                } catch (IOException e) {
-                    if (e.getMessage().contains("התחברות פגה")) {
-                        javafx.application.Platform.runLater(() -> {
-                            try {
-                                FurEverApp.clearAuth();
-                                FurEverApp.showLoginScreen();
-                            } catch (IOException ioException) {
-                                System.err.println("שגיאה בהפניה למסך התחברות: " + ioException.getMessage());
-                            }
-                        });
-                    }
-                }
+        sessionCheckTimer = UIUtils.createSessionChecker(() -> {
+            try {
+                userClientService.getAllUsers();
+            } catch (IOException e) {
+                throw new RuntimeException(e);
             }
-        }, 30000, 30000);
+        });
     }
 
     @FXML

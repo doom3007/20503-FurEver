@@ -21,9 +21,7 @@ public class UserDAO {
 
             if (rs.next()) {
                 User user = extractUserFromResultSet(rs);
-                // Verify password hash
                 if (PasswordUtil.verifyPassword(password, user.getPassword())) {
-                    // Don't return the hashed password in the user object
                     user.setPassword(null);
                     return user;
                 }
@@ -99,14 +97,11 @@ public class UserDAO {
     }
     
     public boolean addUser(User user) throws SQLException {
-        // Check for duplicates using existing methods
         if (usernameExists(user.getUsername()) || emailExists(user.getEmail()) || phoneExists(user.getPhone())) {
             return false;
         }
 
         user.setRegistrationDate(LocalDate.now());
-
-        // Hash the password before storing
         String hashedPassword = PasswordUtil.hashPassword(user.getPassword());
 
         String query = "INSERT INTO User (username, password, fullName, email, phone, isAdmin, registrationDate) " +
@@ -152,7 +147,6 @@ public class UserDAO {
     }
     
     public boolean updateUserPassword(int userID, String newPassword) throws SQLException {
-        // Hash the new password before storing
         String hashedPassword = PasswordUtil.hashPassword(newPassword);
         
         String query = "UPDATE User SET password = ? WHERE userID = ?";

@@ -7,6 +7,11 @@ import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
 
+/**
+ * Service class for category-related API communication
+ * Handles category data retrieval for pet categorization
+ * Manages communication with category endpoints
+ */
 public class CategoryClientService {
     private HttpClient httpClient;
     

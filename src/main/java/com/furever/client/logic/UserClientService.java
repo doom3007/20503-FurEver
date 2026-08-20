@@ -13,6 +13,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * Service class for user-related API communication
+ * Handles user authentication, registration, and user data retrieval
+ * Manages JWT token storage and communication with the user endpoints
+ */
 public class UserClientService {
     private HttpClient httpClient;
     private Gson gson;

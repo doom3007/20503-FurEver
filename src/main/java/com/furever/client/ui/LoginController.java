@@ -17,6 +17,11 @@ import javafx.stage.Stage;
 
 import java.io.IOException;
 
+/**
+ * Controller for the login screen
+ * Handles user authentication and navigation to registration
+ * Validates user input and communicates with the authentication service
+ */
 public class LoginController {
     
     @FXML
@@ -77,7 +82,7 @@ public class LoginController {
                 UIUtils.blinkError(messageLabel);
             }
         } catch (IOException e) {
-            String errorMessage = "שגיאה בהתחברות: " + e.getMessage();
+            String errorMessage = e.getMessage();
             messageLabel.setText(errorMessage);
             UIUtils.blinkError(messageLabel);
         }

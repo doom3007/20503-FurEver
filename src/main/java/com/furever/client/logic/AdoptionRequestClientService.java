@@ -11,6 +11,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * Service class for adoption request API communication
+ * Handles adoption request creation, retrieval, approval, rejection, and status management
+ * Manages communication with request endpoints and duplicate request handling
+ */
 public class AdoptionRequestClientService {
     private HttpClient httpClient;
     

@@ -27,6 +27,16 @@ import java.util.Optional;
 import java.util.Timer;
 import java.util.TimerTask;
 
+/**
+ * Controller class for regular user dashboard interface
+ * Manages functionality for regular user dashboard including:
+ * - Viewing available pets for adoption
+ * - Searching and filtering pets by various criteria
+ * - Sending adoption requests to pet owners
+ * - Managing adoption requests received from other users
+ * - Adding new pet adoption listings
+ * Automatic session validity checking and redirecting to login on session expiration
+ */
 public class UserDashboardController {
     
     @FXML
@@ -237,11 +247,7 @@ public class UserDashboardController {
             petsList.clear();
             petsList.addAll(pets);
         } catch (IOException e) {
-            if (e.getMessage().contains("התחברות פגה")) {
-                UIUtils.showError(statusLabel, "ההתחברות פגה - אנא התחבר מחדש");
-            } else {
-                UIUtils.showError(statusLabel, "שגיאה בטעינת חיות מחמד: " + e.getMessage());
-            }
+            UIUtils.showError(statusLabel, e.getMessage());
         }
     }
 
@@ -255,11 +261,7 @@ public class UserDashboardController {
                 requestsList.addAll(requests);
             }
         } catch (IOException e) {
-            if (e.getMessage().contains("התחברות פגה")) {
-                UIUtils.showError(statusLabel, "ההתחברות פגה - אנא התחבר מחדש");
-            } else {
-                UIUtils.showError(statusLabel, "שגיאה בטעינת בקשות: " + e.getMessage());
-            }
+            UIUtils.showError(statusLabel, e.getMessage());
         }
     }
     
@@ -346,32 +348,7 @@ public class UserDashboardController {
     }
     
     private void showRequestDetails(AdoptionRequest selectedRequest) {
-        Alert alert = new Alert(Alert.AlertType.INFORMATION);
-        alert.setTitle("פרטי בקשה");
-        alert.setHeaderText("בקשה מספר: " + selectedRequest.getRequestID());
-
-        String details = String.format(
-            "חיית מחמד: %s (מזהה: %d)\n" +
-            "בעלים: %s\n" +
-            "מבקש: %s\n" +
-            "טלפון מבקש: %s\n" +
-            "אימייל מבקש: %s\n" +
-            "הודעה: %s\n" +
-            "סטטוס: %s\n" +
-            "תאריך: %s",
-            selectedRequest.getPetName(),
-            selectedRequest.getPetID(),
-            selectedRequest.getOwnerName(),
-            selectedRequest.getRequesterName(),
-            selectedRequest.getRequesterPhone(),
-            selectedRequest.getRequesterEmail(),
-            selectedRequest.getMessage() != null ? selectedRequest.getMessage() : "אין הודעה",
-            selectedRequest.getRequestStatus(),
-            selectedRequest.getRequestDate()
-        );
-
-        alert.setContentText(details);
-        alert.showAndWait();
+        UIUtils.showRequestDetails(selectedRequest);
     }
     
     @FXML
@@ -461,26 +438,13 @@ public class UserDashboardController {
      * Automatically redirects to login screen if session expires
      */
     private void startSessionChecker() {
-        sessionCheckTimer = new Timer(true);
-        sessionCheckTimer.scheduleAtFixedRate(new TimerTask() {
-            @Override
-            public void run() {
-                try {
-                    petClientService.getAllPets();
-                } catch (IOException e) {
-                    if (e.getMessage().contains("התחברות פגה")) {
-                        javafx.application.Platform.runLater(() -> {
-                            try {
-                                FurEverApp.clearAuth();
-                                FurEverApp.showLoginScreen();
-                            } catch (IOException ioException) {
-                                System.err.println("שגיאה בהפניה למסך התחברות: " + ioException.getMessage());
-                            }
-                        });
-                    }
-                }
+        sessionCheckTimer = UIUtils.createSessionChecker(() -> {
+            try {
+                petClientService.getAllPets();
+            } catch (IOException e) {
+                throw new RuntimeException(e);
             }
-        }, 30000, 30000);
+        });
     }
     
     @FXML
@@ -497,46 +461,7 @@ public class UserDashboardController {
     }
     
     private void showPetDetails(Pet pet) {
-        Alert alert = new Alert(Alert.AlertType.INFORMATION);
-        alert.setTitle("פרטי חיית מחמד");
-        alert.setHeaderText(pet.getName());
-
-        String details = String.format(
-            "קטגוריה: %s\n" +
-            "גיל: %d שנים\n" +
-            "מין: %s\n" +
-            "סטטוס: %s\n" +
-            "תיאור: %s\n\n" +
-            "פרטי בעלים:\n" +
-            "שם: %s\n" +
-            "טלפון: %s\n" +
-            "אימייל: %s\n" +
-            "תאריך פרסום: %s",
-            pet.getCategoryName(),
-            pet.getAge(),
-            pet.getGender(),
-            pet.getStatus(),
-            pet.getDescription() != null ? pet.getDescription() : "אין תיאור",
-            pet.getOwnerName(),
-            pet.getOwnerPhone(),
-            pet.getOwnerEmail(),
-            pet.getPublishDate().format(DateTimeFormatter.ofPattern("dd/MM/yyyy"))
-        );
-
-        alert.setContentText(details);
-
-        User currentUser = FurEverApp.getCurrentUser();
-        if (currentUser != null && !pet.getOwnerEmail().equals(currentUser.getEmail()) && pet.getStatus().equals("זמינה")) {
-            ButtonType requestButtonType = new ButtonType("בקש אימוץ", ButtonBar.ButtonData.OK_DONE);
-            alert.getButtonTypes().setAll(requestButtonType, ButtonType.CANCEL);
-
-            Optional<ButtonType> result = alert.showAndWait();
-            if (result.isPresent() && result.get() == requestButtonType) {
-                showAdoptionRequestDialog(pet);
-            }
-        } else {
-            alert.showAndWait();
-        }
+        UIUtils.showPetDetails(pet);
     }
     
     private void showAdoptionRequestDialog(Pet pet) {

@@ -7,6 +7,16 @@ import com.furever.server.logic.PetService;
 import java.sql.SQLException;
 import java.util.List;
 
+/**
+ * Service class for adoption request management
+ * Provides business logic for managing adoption requests including:
+ * - Retrieving adoption requests (all, by ID, by user, by pet)
+ * - Adding new adoption requests with duplicate prevention and self-adoption prevention
+ * - Approving adoption requests with rejection of other requests and pet status update
+ * - Rejecting adoption requests with pet status restoration
+ * - Changing request status (pending, approved, rejected)
+ * - Deleting adoption requests
+ */
 public class AdoptionRequestService {
     private AdoptionRequestDAO adoptionRequestDAO;
     private PetService petService;

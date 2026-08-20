@@ -9,6 +9,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * Service class for pet-related API communication
+ * Handles pet data retrieval, creation, updates, and deletion
+ * Manages communication with pet endpoints including search and filtering
+ */
 public class PetClientService {
     private HttpClient httpClient;
     

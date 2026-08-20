@@ -2,6 +2,11 @@ package com.furever.client.ui;
 
 import java.util.regex.Pattern;
 
+/**
+ * Utility class for input validation
+ * Provides validation methods for email addresses and phone numbers
+ * Used across the application to ensure data quality and user input correctness
+ */
 public class ValidationUtils {
     
     private static final Pattern PHONE_PATTERN = Pattern.compile("^\\+?[0-9]+$");

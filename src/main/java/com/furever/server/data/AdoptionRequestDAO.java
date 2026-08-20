@@ -233,6 +233,13 @@ public class AdoptionRequestDAO {
         }
     }
     
+    /**
+     * Extract adoption request data from ResultSet row
+     * Maps database columns to AdoptionRequest object properties
+     * @param rs ResultSet containing adoption request data
+     * @return AdoptionRequest object populated with data from ResultSet
+     * @throws SQLException if database access error occurs
+     */
     private AdoptionRequest extractRequestFromResultSet(ResultSet rs) throws SQLException {
         AdoptionRequest request = new AdoptionRequest();
         request.setRequestID(rs.getInt("requestID"));

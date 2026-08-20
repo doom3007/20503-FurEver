@@ -1,7 +1,7 @@
 package com.furever.client.ui;
 
 import com.furever.client.FurEverApp;
-import com.furever.client.communication.HttpClient;
+import com.furever.client.logic.AdoptionRequestClientService;
 import com.furever.common.models.AdoptionRequest;
 import com.furever.common.models.Pet;
 import com.furever.common.models.User;
@@ -34,10 +34,10 @@ public class AdoptionRequestController {
     private Label messageLabel;
     
     private Pet pet;
-    private HttpClient httpClient;
+    private AdoptionRequestClientService adoptionRequestClientService;
     
     public AdoptionRequestController() {
-        this.httpClient = new HttpClient();
+        this.adoptionRequestClientService = new AdoptionRequestClientService();
     }
     
     public void setPet(Pet pet) {
@@ -87,8 +87,8 @@ public class AdoptionRequestController {
             request.setRequesterPhone(requesterPhone);
             request.setRequesterEmail(requesterEmail);
             
-            String result = httpClient.post("/requests", request, String.class);
-            if (result != null && !result.contains("error")) {
+            boolean success = adoptionRequestClientService.addRequest(request);
+            if (success) {
                 UIUtils.showSuccess(messageLabel, "בקשת האימוץ נשלחה בהצלחה!");
                 
                 javafx.application.Platform.runLater(() -> {
@@ -101,15 +101,10 @@ public class AdoptionRequestController {
                     stage.close();
                 });
             } else {
-                String errorMsg = result != null ? result : "שגיאה בשליחת הבקשה";
-                if (errorMsg.contains("כבר קיימת בקשת אימוץ ממך לחיית מחמד זו")) {
-                    UIUtils.showError(messageLabel, "כבר קיימת בקשת אימוץ ממך לחיית מחמד זו");
-                } else {
-                    UIUtils.showError(messageLabel, "שגיאה בשליחת הבקשה: " + errorMsg);
-                }
+                UIUtils.showError(messageLabel, "שגיאה בשליחת הבקשה");
             }
         } catch (IOException e) {
-            UIUtils.showError(messageLabel, "שגיאה בשליחת הבקשה: " + e.getMessage());
+            UIUtils.showError(messageLabel, e.getMessage());
         }
     }
     

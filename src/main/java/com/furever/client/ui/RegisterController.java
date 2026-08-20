@@ -11,6 +11,11 @@ import javafx.stage.Stage;
 
 import java.io.IOException;
 
+/**
+ * Controller for the registration screen
+ * Handles new user registration with validation and admin code support
+ * Validates email format, phone numbers, password matching, and duplicate prevention
+ */
 public class RegisterController {
     
     @FXML

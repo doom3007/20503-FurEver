@@ -6,6 +6,15 @@ import com.furever.server.data.PetDAO;
 import java.sql.SQLException;
 import java.util.List;
 
+/**
+ * Service class for pet management
+ * Provides business logic for managing pets including:
+ * - Retrieving pets (all, available, by category, search)
+ * - Adding new pets with validation
+ * - Updating and deleting pets
+ * - Updating pet status (available, in adoption process, adopted)
+ * - Checking ownership of pets
+ */
 public class PetService {
     private PetDAO petDAO;
     

@@ -6,6 +6,15 @@ import com.furever.server.data.UserDAO;
 import java.sql.SQLException;
 import java.util.List;
 
+/**
+ * Service class for user management
+ * Provides business logic for managing user accounts including:
+ * - User authentication (login)
+ * - Registration of new users with duplicate checking
+ * - Updating user details and passwords
+ * - Deleting users
+ * - Retrieving user information
+ */
 public class UserService {
     private UserDAO userDAO;
     

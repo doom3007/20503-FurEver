@@ -9,6 +9,11 @@ import io.jsonwebtoken.security.Keys;
 import java.security.Key;
 import java.util.Date;
 
+/**
+ * Utility class for JWT (JSON Web Token) management
+ * Handles token generation, validation, and claims extraction
+ * Uses dynamic key generation for enhanced security (keys change on server restart)
+ */
 public class JWTUtil {
     private static final long EXPIRATION_TIME = 24 * 60 * 60 * 1000;
     private static final Key SECRET_KEY = Keys.secretKeyFor(SignatureAlgorithm.HS256);
