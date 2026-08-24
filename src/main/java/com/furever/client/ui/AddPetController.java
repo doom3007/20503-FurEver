@@ -14,6 +14,11 @@ import java.io.IOException;
 import java.time.LocalDate;
 import java.util.List;
 
+/**
+ * Controller for the add pet dialog
+ * Handles pet publication form with validation and submission
+ * Manages category selection, input validation, and pet data submission to server
+ */
 public class AddPetController {
     
     @FXML

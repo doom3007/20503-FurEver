@@ -13,6 +13,11 @@ import javafx.scene.control.TextField;
 import java.io.IOException;
 import java.time.LocalDate;
 
+/**
+ * Controller for the adoption request dialog
+ * Handles adoption request form with validation and submission
+ * Manages user input for adoption requests and communicates with server
+ */
 public class AdoptionRequestController {
     
     @FXML

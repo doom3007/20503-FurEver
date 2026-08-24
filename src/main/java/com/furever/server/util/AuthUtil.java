@@ -103,6 +103,14 @@ public class AuthUtil {
      * @param message Error message
      * @throws IOException if response sending fails
      */
+    /**
+     * Send an error response to the client
+     * Used for authentication and authorization failures
+     * @param exchange HTTP exchange for sending response
+     * @param statusCode HTTP status code for the error
+     * @param message Error message to send in response body
+     * @throws IOException if I/O error occurs when sending response
+     */
     private static void sendErrorResponse(HttpExchange exchange, int statusCode, String message) throws IOException {
         exchange.getResponseHeaders().set("Content-Type", "application/json; charset=UTF-8");
         exchange.getResponseHeaders().set("Access-Control-Allow-Origin", "*");

@@ -8,6 +8,11 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Data Access Object for User entity
+ * Handles database operations for users including authentication, registration, and CRUD operations
+ * Provides methods for user validation, duplicate checking, and password verification
+ */
 public class UserDAO {
     
     public User authenticateUser(String username, String password) throws SQLException {
@@ -184,6 +189,14 @@ public class UserDAO {
         return fieldExists("phone", phone);
     }
 
+    /**
+     * Check if a specific field value already exists in the User table
+     * Used for validation to prevent duplicate usernames, emails, or phone numbers
+     * @param fieldName Name of the field to check (username, email, or phone)
+     * @param value Value to check for existence
+     * @return true if the value already exists, false otherwise
+     * @throws SQLException if database access error occurs
+     */
     private boolean fieldExists(String fieldName, String value) throws SQLException {
         String query = "SELECT COUNT(*) FROM User WHERE " + fieldName + " = ?";
 
@@ -200,6 +213,13 @@ public class UserDAO {
         return false;
     }
     
+    /**
+     * Extract user data from ResultSet row
+     * Maps database columns to User object properties
+     * @param rs ResultSet containing user data
+     * @return User object populated with data from ResultSet
+     * @throws SQLException if database access error occurs
+     */
     private User extractUserFromResultSet(ResultSet rs) throws SQLException {
         User user = new User();
         user.setUserID(rs.getInt("userID"));

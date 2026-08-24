@@ -15,7 +15,9 @@ import java.util.Date;
  * Uses dynamic key generation for enhanced security (keys change on server restart)
  */
 public class JWTUtil {
+    // Token expiration time: 24 hours in milliseconds
     private static final long EXPIRATION_TIME = 24 * 60 * 60 * 1000;
+    // Dynamically generated secret key for signing tokens (changes on server restart for security)
     private static final Key SECRET_KEY = Keys.secretKeyFor(SignatureAlgorithm.HS256);
     
     /**
@@ -28,6 +30,7 @@ public class JWTUtil {
         Date now = new Date();
         Date expirationDate = new Date(now.getTime() + EXPIRATION_TIME);
         
+        // Build JWT with claims: subject (email), admin status, issue time, expiration time
         return Jwts.builder()
                 .setSubject(email)
                 .claim("isAdmin", isAdmin)
@@ -77,6 +80,7 @@ public class JWTUtil {
     public static String extractToken(HttpExchange exchange) {
         String authHeader = exchange.getRequestHeaders().getFirst("Authorization");
         if (authHeader != null && authHeader.startsWith("Bearer ")) {
+            // Remove "Bearer " prefix (7 characters) to get the actual token
             return authHeader.substring(7);
         }
         return null;

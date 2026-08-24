@@ -6,6 +6,11 @@ import com.furever.server.data.CategoryDAO;
 import java.sql.SQLException;
 import java.util.List;
 
+/**
+ * Service class for category management
+ * Provides business logic for category operations including validation
+ * Handles category CRUD operations with data validation
+ */
 public class CategoryService {
     private CategoryDAO categoryDAO;
     

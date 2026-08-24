@@ -5,6 +5,11 @@ import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.util.Properties;
 
+/**
+ * Database connection manager using singleton pattern
+ * Manages MySQL database connection with proper UTF-8 encoding for Hebrew character support
+ * Provides singleton connection instance for efficient resource management
+ */
 public class DatabaseConnection {
     private static final String URL = "jdbc:mysql://localhost:3306/furever";
     private static final String USERNAME = "root"; // Put your MySQL username here

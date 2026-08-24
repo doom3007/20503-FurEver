@@ -10,6 +10,8 @@ import at.favre.lib.crypto.bcrypt.BCrypt;
 public class PasswordUtil {
     
     public static String hashPassword(String plainPassword) {
+        // BCrypt with cost factor 12 (balance between security and performance)
+        // Higher cost factor = more secure but slower
         return BCrypt.withDefaults().hashToString(12, plainPassword.toCharArray());
     }
     

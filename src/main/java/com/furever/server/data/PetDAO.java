@@ -8,6 +8,11 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Data Access Object for Pet entity
+ * Handles database operations for pets including CRUD operations, search, and filtering
+ * Provides methods for pet management with category integration and ownership validation
+ */
 public class PetDAO {
     
     private CategoryDAO categoryDAO;
@@ -97,6 +102,7 @@ public class PetDAO {
      * @return true if the user owns the pet, false otherwise
      */
     public boolean doesUserOwnPet(String userEmail, int petID) throws SQLException {
+        // SQL query checks if the given petID belongs to the given userEmail
         String query = "SELECT COUNT(*) FROM Pet WHERE petID = ? AND ownerEmail = ?";
         
         try (Connection conn = DatabaseConnection.getConnection();
@@ -125,6 +131,7 @@ public class PetDAO {
      */
     public List<Pet> searchPets(String name, Integer categoryID, Integer maxAge, String gender) throws SQLException {
         List<Pet> pets = new ArrayList<>();
+        // Build base query with category join and status filter for available pets only
         StringBuilder query = new StringBuilder(
             "SELECT p.*, c.categoryName FROM Pet p " +
             "LEFT JOIN Category c ON p.categoryID = c.categoryID " +
@@ -133,9 +140,10 @@ public class PetDAO {
         
         List<Object> parameters = new ArrayList<>();
         
+        // Dynamically add WHERE clauses based on provided filters
         if (name != null && !name.isEmpty()) {
             query.append("AND p.name LIKE ? ");
-            parameters.add("%" + name + "%");
+            parameters.add("%" + name + "%"); // Partial match for name search
         }
         
         if (categoryID != null) {
@@ -145,7 +153,7 @@ public class PetDAO {
         
         if (maxAge != null) {
             query.append("AND p.age <= ? ");
-            parameters.add(maxAge);
+            parameters.add(maxAge); // Include pets at or below max age
         }
         
         if (gender != null && !gender.isEmpty()) {
@@ -153,6 +161,7 @@ public class PetDAO {
             parameters.add(gender);
         }
         
+        // Order by most recently published first
         query.append("ORDER BY p.publishDate DESC");
         
         try (Connection conn = DatabaseConnection.getConnection();

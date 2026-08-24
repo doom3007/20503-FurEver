@@ -66,6 +66,17 @@ public class HttpClient {
         return sendRequest("DELETE", fullEndpoint, null, responseType);
     }
     
+    /**
+     * Send HTTP request to the server
+     * Handles all HTTP methods (GET, POST, PUT, DELETE) with authentication
+     * Manages connection setup, request formatting, and response parsing
+     * @param method HTTP method (GET, POST, PUT, DELETE)
+     * @param endpoint API endpoint path
+     * @param body Request body (for POST and PUT methods)
+     * @param responseType Expected response type for deserialization
+     * @return Deserialized response object
+     * @throws IOException if network error or invalid response occurs
+     */
     private <T> T sendRequest(String method, String endpoint, Object body, Class<T> responseType) throws IOException {
         String fullUrl = BASE_URL + endpoint;
         HttpURLConnection connection = null;
@@ -149,6 +160,12 @@ public class HttpClient {
         }
     }
     
+    /**
+     * Build URL query string from parameter map
+     * Converts map of parameters to URL-encoded query string format
+     * @param params Map of parameter names to values
+     * @return URL-encoded query string (without leading ?)
+     */
     private String buildQueryString(Map<String, String> params) {
         if (params == null || params.isEmpty()) {
             return "";
