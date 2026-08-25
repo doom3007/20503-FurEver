@@ -12,6 +12,7 @@ import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDate;
 import java.util.Map;
@@ -163,6 +164,7 @@ public class HttpClient {
     /**
      * Build URL query string from parameter map
      * Converts map of parameters to URL-encoded query string format
+     * Properly handles Hebrew characters and special characters
      * @param params Map of parameter names to values
      * @return URL-encoded query string (without leading ?)
      */
@@ -176,7 +178,14 @@ public class HttpClient {
             if (sb.length() > 0) {
                 sb.append("&");
             }
-            sb.append(entry.getKey()).append("=").append(entry.getValue());
+            try {
+                sb.append(URLEncoder.encode(entry.getKey(), StandardCharsets.UTF_8))
+                  .append("=")
+                  .append(URLEncoder.encode(entry.getValue(), StandardCharsets.UTF_8));
+            } catch (Exception e) {
+                // Fallback to unencoded if encoding fails
+                sb.append(entry.getKey()).append("=").append(entry.getValue());
+            }
         }
         return sb.toString();
     }

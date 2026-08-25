@@ -17,6 +17,7 @@ import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.control.ButtonBar;
+import javafx.scene.layout.VBox;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import java.io.IOException;
@@ -101,6 +102,9 @@ public class UserDashboardController {
     
     @FXML
     private TextArea statusLabel;
+    
+    @FXML
+    private VBox filterVBox;
     
     @FXML
     private Button refreshButton;
@@ -204,17 +208,23 @@ public class UserDashboardController {
         loadPets();
         loadRequests();
         
+        // Add Enter key listeners for search fields
+        searchNameField.setOnAction(event -> handleSearch());
+        maxAgeField.setOnAction(event -> handleSearch());
+        
         mainTabPane.getSelectionModel().selectedItemProperty().addListener((obs, oldTab, newTab) -> {
             if (newTab != null && newTab.getText().equals("הבקשות שלי")) {
                 loadRequests();
                 viewDetailsButton.setVisible(false);
                 viewRequestDetailsButton.setVisible(true);
                 updateOwnerButtonVisibility();
+                filterVBox.setVisible(false);
             } else if (newTab != null && newTab.getText().equals("חיות מחמד")) {
                 viewDetailsButton.setVisible(true);
                 viewRequestDetailsButton.setVisible(false);
                 approveRequestButton.setVisible(false);
                 rejectRequestButton.setVisible(false);
+                filterVBox.setVisible(true);
             }
         });
         

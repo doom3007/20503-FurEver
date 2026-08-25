@@ -17,7 +17,7 @@
     </top>
     
     <left>
-        <VBox spacing="10" style="-fx-background-color: #ecf0f1; -fx-padding: 10;" prefWidth="250">
+        <VBox fx:id="filterVBox" spacing="10" style="-fx-background-color: #ecf0f1; -fx-padding: 10;" prefWidth="250">
             <Label text="חיפוש וסינון" style="-fx-font-weight: bold; -fx-font-size: 14px;"/>
             
             <HBox spacing="10" alignment="CENTER" nodeOrientation="RIGHT_TO_LEFT">
