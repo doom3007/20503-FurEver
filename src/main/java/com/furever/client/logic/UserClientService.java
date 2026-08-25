@@ -1,14 +1,12 @@
 package com.furever.client.logic;
 
 import com.furever.client.FurEverApp;
-import com.furever.client.communication.HttpClient;
 import com.furever.common.models.User;
 import com.furever.common.util.LocalDateAdapter;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
 import java.io.IOException;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -18,12 +16,11 @@ import java.util.Map;
  * Handles user authentication, registration, and user data retrieval
  * Manages JWT token storage and communication with the user endpoints
  */
-public class UserClientService {
-    private HttpClient httpClient;
+public class UserClientService extends BaseClientService {
     private Gson gson;
     
     public UserClientService() {
-        this.httpClient = new HttpClient();
+        super();
         this.gson = new GsonBuilder()
             .registerTypeAdapter(java.time.LocalDate.class, new LocalDateAdapter())
             .create();
@@ -61,7 +58,7 @@ public class UserClientService {
     
     public List<User> getAllUsers() throws IOException {
         User[] users = httpClient.get("/users", User[].class);
-        return Arrays.asList(users);
+        return arrayToList(users);
     }
     
     private static class LoginRequest {

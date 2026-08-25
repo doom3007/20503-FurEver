@@ -15,7 +15,7 @@ import java.util.List;
  * - Deleting users
  * - Retrieving user information
  */
-public class UserService {
+public class UserService extends BaseService {
     private UserDAO userDAO;
     
     public UserService() {
@@ -23,13 +23,8 @@ public class UserService {
     }
     
     public User authenticateUser(String username, String password) throws SQLException {
-        if (username == null || username.isEmpty()) {
-            throw new IllegalArgumentException("שם משתמש לא יכול להיות ריק");
-        }
-        if (password == null || password.isEmpty()) {
-            throw new IllegalArgumentException("סיסמה לא יכולה להיות ריקה");
-        }
-        
+        validateNotNullOrEmpty(username, "שם משתמש");
+        validateNotNullOrEmpty(password, "סיסמה");
         return userDAO.authenticateUser(username, password);
     }
     
@@ -46,21 +41,11 @@ public class UserService {
     }
     
     public boolean registerUser(User user) throws SQLException {
-        if (user.getUsername() == null || user.getUsername().isEmpty()) {
-            throw new IllegalArgumentException("שם משתמש לא יכול להיות ריק");
-        }
-        if (user.getPassword() == null || user.getPassword().isEmpty()) {
-            throw new IllegalArgumentException("סיסמה לא יכולה להיות ריקה");
-        }
-        if (user.getFullName() == null || user.getFullName().isEmpty()) {
-            throw new IllegalArgumentException("שם מלא לא יכול להיות ריק");
-        }
-        if (user.getEmail() == null || user.getEmail().isEmpty()) {
-            throw new IllegalArgumentException("אימייל לא יכול להיות ריק");
-        }
-        if (user.getPhone() == null || user.getPhone().isEmpty()) {
-            throw new IllegalArgumentException("טלפון לא יכול להיות ריק");
-        }
+        validateNotNullOrEmpty(user.getUsername(), "שם משתמש");
+        validateNotNullOrEmpty(user.getPassword(), "סיסמה");
+        validateNotNullOrEmpty(user.getFullName(), "שם מלא");
+        validateNotNullOrEmpty(user.getEmail(), "אימייל");
+        validateNotNullOrEmpty(user.getPhone(), "טלפון");
         
         if (userDAO.usernameExists(user.getUsername())) {
             throw new IllegalArgumentException("שם המשתמש כבר קיים");
@@ -76,18 +61,12 @@ public class UserService {
     }
     
     public boolean updateUser(User user) throws SQLException {
-        if (user.getUserID() <= 0) {
-            throw new IllegalArgumentException("מזהה משתמש לא תקין");
-        }
-        
+        validatePositiveId(user.getUserID(), "מזהה משתמש");
         return userDAO.updateUser(user);
     }
     
     public boolean updateUserPassword(int userID, String newPassword) throws SQLException {
-        if (newPassword == null || newPassword.isEmpty()) {
-            throw new IllegalArgumentException("סיסמה חדשה לא יכולה להיות ריקה");
-        }
-        
+        validateNotNullOrEmpty(newPassword, "סיסמה חדשה");
         return userDAO.updateUserPassword(userID, newPassword);
     }
     

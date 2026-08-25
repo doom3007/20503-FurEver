@@ -13,7 +13,7 @@ import java.util.List;
  * Handles database operations for pets including CRUD operations, search, and filtering
  * Provides methods for pet management with category integration and ownership validation
  */
-public class PetDAO {
+public class PetDAO extends BaseDAO {
     
     private CategoryDAO categoryDAO;
     

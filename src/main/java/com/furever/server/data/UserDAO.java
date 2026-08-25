@@ -13,7 +13,7 @@ import java.util.List;
  * Handles database operations for users including authentication, registration, and CRUD operations
  * Provides methods for user validation, duplicate checking, and password verification
  */
-public class UserDAO {
+public class UserDAO extends BaseDAO {
     
     public User authenticateUser(String username, String password) throws SQLException {
         String query = "SELECT * FROM User WHERE username = ?";
@@ -178,39 +178,15 @@ public class UserDAO {
     }
     
     public boolean usernameExists(String username) throws SQLException {
-        return fieldExists("username", username);
+        return fieldExists("User", "username", username);
     }
 
     public boolean emailExists(String email) throws SQLException {
-        return fieldExists("email", email);
+        return fieldExists("User", "email", email);
     }
 
     public boolean phoneExists(String phone) throws SQLException {
-        return fieldExists("phone", phone);
-    }
-
-    /**
-     * Check if a specific field value already exists in the User table
-     * Used for validation to prevent duplicate usernames, emails, or phone numbers
-     * @param fieldName Name of the field to check (username, email, or phone)
-     * @param value Value to check for existence
-     * @return true if the value already exists, false otherwise
-     * @throws SQLException if database access error occurs
-     */
-    private boolean fieldExists(String fieldName, String value) throws SQLException {
-        String query = "SELECT COUNT(*) FROM User WHERE " + fieldName + " = ?";
-
-        try (Connection conn = DatabaseConnection.getConnection();
-             PreparedStatement pstmt = conn.prepareStatement(query)) {
-
-            pstmt.setString(1, value);
-            ResultSet rs = pstmt.executeQuery();
-
-            if (rs.next()) {
-                return rs.getInt(1) > 0;
-            }
-        }
-        return false;
+        return fieldExists("User", "phone", phone);
     }
     
     /**

@@ -13,7 +13,7 @@ import java.util.List;
  * Handles database operations for adoption requests including CRUD operations and status management
  * Provides methods for request validation, duplicate prevention, and status updates
  */
-public class AdoptionRequestDAO {
+public class AdoptionRequestDAO extends BaseDAO {
     
     private PetDAO petDAO;
     

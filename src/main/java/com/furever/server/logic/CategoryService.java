@@ -11,7 +11,7 @@ import java.util.List;
  * Provides business logic for category operations including validation
  * Handles category CRUD operations with data validation
  */
-public class CategoryService {
+public class CategoryService extends BaseService {
     private CategoryDAO categoryDAO;
     
     public CategoryService() {
@@ -31,18 +31,12 @@ public class CategoryService {
     }
     
     public boolean addCategory(Category category) throws SQLException {
-        if (category.getCategoryName() == null || category.getCategoryName().isEmpty()) {
-            throw new IllegalArgumentException("שם קטגוריה לא יכול להיות ריק");
-        }
-        
+        validateNotNullOrEmpty(category.getCategoryName(), "שם קטגוריה");
         return categoryDAO.addCategory(category);
     }
     
     public boolean updateCategory(Category category) throws SQLException {
-        if (category.getCategoryID() <= 0) {
-            throw new IllegalArgumentException("מזהה קטגוריה לא תקין");
-        }
-        
+        validatePositiveId(category.getCategoryID(), "מזהה קטגוריה");
         return categoryDAO.updateCategory(category);
     }
     

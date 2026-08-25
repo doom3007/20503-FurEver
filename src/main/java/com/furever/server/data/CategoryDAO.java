@@ -11,7 +11,7 @@ import java.util.List;
  * Handles database operations for pet categories including CRUD operations
  * Provides methods for retrieving, creating, updating, and deleting categories
  */
-public class CategoryDAO {
+public class CategoryDAO extends BaseDAO {
     
     public List<Category> getAllCategories() throws SQLException {
         List<Category> categories = new ArrayList<>();

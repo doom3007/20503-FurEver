@@ -17,7 +17,7 @@ import java.util.List;
  * - Changing request status (pending, approved, rejected)
  * - Deleting adoption requests
  */
-public class AdoptionRequestService {
+public class AdoptionRequestService extends BaseService {
     private AdoptionRequestDAO adoptionRequestDAO;
     private PetService petService;
     
@@ -54,18 +54,10 @@ public class AdoptionRequestService {
      * @throws SQLException if validation fails or database error occurs
      */
     public boolean addRequest(AdoptionRequest request) throws SQLException {
-        if (request.getPetID() <= 0) {
-            throw new SQLException("מזהה חיית מחמד לא תקין");
-        }
-        if (request.getRequesterName() == null || request.getRequesterName().isEmpty()) {
-            throw new SQLException("שם המבקש לא יכול להיות ריק");
-        }
-        if (request.getRequesterPhone() == null || request.getRequesterPhone().isEmpty()) {
-            throw new SQLException("מספר הטלפון לא יכול להיות ריק");
-        }
-        if (request.getRequesterEmail() == null || request.getRequesterEmail().isEmpty()) {
-            throw new SQLException("כתובת האימייל לא יכולה להיות ריקה");
-        }
+        validatePositiveIdSql(request.getPetID(), "מזהה חיית מחמד");
+        validateNotNullOrEmptySql(request.getRequesterName(), "שם המבקש");
+        validateNotNullOrEmptySql(request.getRequesterPhone(), "מספר הטלפון");
+        validateNotNullOrEmptySql(request.getRequesterEmail(), "כתובת האימייל");
         
         return adoptionRequestDAO.addRequest(request);
     }
@@ -141,12 +133,8 @@ public class AdoptionRequestService {
      * @throws SQLException if validation fails or database error occurs
      */
     public boolean setRequestStatus(int requestID, String status) throws SQLException {
-        if (status == null || status.isEmpty()) {
-            throw new SQLException("סטטוס לא יכול להיות ריק");
-        }
-        if (!status.equals("ממתינה") && !status.equals("אושרה") && !status.equals("נדחתה")) {
-            throw new SQLException("סטטוס לא תקין");
-        }
+        String[] allowedStatuses = {"ממתינה", "אושרה", "נדחתה"};
+        validateStatusSql(status, allowedStatuses, "סטטוס");
         
         AdoptionRequest request = adoptionRequestDAO.getRequestById(requestID);
         if (request == null) {

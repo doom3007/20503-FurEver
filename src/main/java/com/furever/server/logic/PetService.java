@@ -15,7 +15,7 @@ import java.util.List;
  * - Updating pet status (available, in adoption process, adopted)
  * - Checking ownership of pets
  */
-public class PetService {
+public class PetService extends BaseService {
     private PetDAO petDAO;
     
     public PetService() {
@@ -43,33 +43,18 @@ public class PetService {
     }
     
     public boolean addPet(Pet pet) throws SQLException {
-        if (pet.getName() == null || pet.getName().isEmpty()) {
-            throw new IllegalArgumentException("שם חיית המחמד לא יכול להיות ריק");
-        }
-        if (pet.getCategoryID() <= 0) {
-            throw new IllegalArgumentException("מזהה קטגוריה לא תקין");
-        }
-        if (pet.getAge() < 0) {
-            throw new IllegalArgumentException("גיל לא יכול להיות שלילי");
-        }
-        if (pet.getOwnerName() == null || pet.getOwnerName().isEmpty()) {
-            throw new IllegalArgumentException("שם הבעלים לא יכול להיות ריק");
-        }
-        if (pet.getOwnerPhone() == null || pet.getOwnerPhone().isEmpty()) {
-            throw new IllegalArgumentException("טלפון הבעלים לא יכול להיות ריק");
-        }
-        if (pet.getOwnerEmail() == null || pet.getOwnerEmail().isEmpty()) {
-            throw new IllegalArgumentException("אימייל הבעלים לא יכול להיות ריק");
-        }
+        validateNotNullOrEmpty(pet.getName(), "שם חיית המחמד");
+        validatePositiveId(pet.getCategoryID(), "מזהה קטגוריה");
+        validateNotNegative(pet.getAge(), "גיל");
+        validateNotNullOrEmpty(pet.getOwnerName(), "שם הבעלים");
+        validateNotNullOrEmpty(pet.getOwnerPhone(), "טלפון הבעלים");
+        validateNotNullOrEmpty(pet.getOwnerEmail(), "אימייל הבעלים");
         
         return petDAO.addPet(pet);
     }
     
     public boolean updatePet(Pet pet) throws SQLException {
-        if (pet.getPetID() <= 0) {
-            throw new IllegalArgumentException("מזהה חיית מחמד לא תקין");
-        }
-        
+        validatePositiveId(pet.getPetID(), "מזהה חיית מחמד");
         return petDAO.updatePet(pet);
     }
     
