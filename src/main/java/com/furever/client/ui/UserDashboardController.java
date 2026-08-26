@@ -38,10 +38,10 @@ import java.util.TimerTask;
  * - Adding new pet adoption listings
  * Automatic session validity checking and redirecting to login on session expiration
  */
-public class UserDashboardController {
+public class UserDashboardController extends BaseDashboardController {
     
     @FXML
-    private Label welcomeLabel;
+    private TabPane mainTabPane;
     
     @FXML
     private TextField searchNameField;
@@ -76,8 +76,7 @@ public class UserDashboardController {
     @FXML
     private TableColumn<Pet, LocalDate> dateColumn;
     
-    @FXML
-    private TabPane mainTabPane;
+
     
     @FXML
     private TableView<AdoptionRequest> requestsTableView;
@@ -101,9 +100,6 @@ public class UserDashboardController {
     private TableColumn<AdoptionRequest, LocalDate> requestDateColumn;
     
     @FXML
-    private TextArea statusLabel;
-    
-    @FXML
     private VBox filterVBox;
     
     @FXML
@@ -111,6 +107,9 @@ public class UserDashboardController {
     
     @FXML
     private Button viewDetailsButton;
+
+    @FXML
+    private Button sendRequestButton;
 
     @FXML
     private Button viewRequestDetailsButton;
@@ -121,22 +120,19 @@ public class UserDashboardController {
     @FXML
     private Button rejectRequestButton;
     
-    private PetClientService petClientService;
     private CategoryClientService categoryClientService;
     private AdoptionRequestClientService adoptionRequestClientService;
     private ObservableList<Pet> petsList;
     private ObservableList<AdoptionRequest> requestsList;
-    private Timer sessionCheckTimer;
     
     @FXML
     public void initialize() {
-        this.petClientService = new PetClientService();
+        initializeBase();
+        
         this.categoryClientService = new CategoryClientService();
         this.adoptionRequestClientService = new AdoptionRequestClientService();
         this.petsList = FXCollections.observableArrayList();
         this.requestsList = FXCollections.observableArrayList();
-        
-        startSessionChecker();
         
         nameColumn.setCellValueFactory(new PropertyValueFactory<>("name"));
         categoryColumn.setCellValueFactory(new PropertyValueFactory<>("categoryName"));
@@ -216,11 +212,13 @@ public class UserDashboardController {
             if (newTab != null && newTab.getText().equals("הבקשות שלי")) {
                 loadRequests();
                 viewDetailsButton.setVisible(false);
+                sendRequestButton.setVisible(false);
                 viewRequestDetailsButton.setVisible(true);
                 updateOwnerButtonVisibility();
                 filterVBox.setVisible(false);
             } else if (newTab != null && newTab.getText().equals("חיות מחמד")) {
                 viewDetailsButton.setVisible(true);
+                sendRequestButton.setVisible(true);
                 viewRequestDetailsButton.setVisible(false);
                 approveRequestButton.setVisible(false);
                 rejectRequestButton.setVisible(false);
@@ -231,11 +229,7 @@ public class UserDashboardController {
         approveRequestButton.setVisible(false);
         rejectRequestButton.setVisible(false);
         viewRequestDetailsButton.setVisible(false);
-        
-        User currentUser = FurEverApp.getCurrentUser();
-        if (currentUser != null) {
-            welcomeLabel.setText("שלום, " + currentUser.getFullName());
-        }
+        sendRequestButton.setVisible(false);
     }
     
     private void loadCategories() {
@@ -251,14 +245,12 @@ public class UserDashboardController {
     }
     
     private void loadPets() {
-        statusLabel.clear();
-        try {
+        loadDataWithHandling(() -> {
             List<Pet> pets = petClientService.getAllPets();
             petsList.clear();
             petsList.addAll(pets);
-        } catch (IOException e) {
-            UIUtils.showError(statusLabel, e.getMessage());
-        }
+            return pets.size();
+        }, "נמצאו ", "שגיאה בטעינת חיות מחמד: ", statusLabel);
     }
 
     private void loadRequests() {
@@ -269,6 +261,7 @@ public class UserDashboardController {
                 List<AdoptionRequest> requests = adoptionRequestClientService.getRequestsForUserByEmail(currentUser.getEmail());
                 requestsList.clear();
                 requestsList.addAll(requests);
+                UIUtils.showInfo(statusLabel, "נמצאו " + requests.size() + " בקשות");
             }
         } catch (IOException e) {
             UIUtils.showError(statusLabel, e.getMessage());
@@ -329,6 +322,17 @@ public class UserDashboardController {
         }
 
         showPetDetails(selectedPet);
+    }
+    
+    @FXML
+    private void handleSendAdoptionRequest() {
+        Pet selectedPet = petsTableView.getSelectionModel().getSelectedItem();
+        if (selectedPet == null) {
+            UIUtils.showError(statusLabel, "אנא בחר חיית מחמד");
+            return;
+        }
+        
+        showAdoptionRequestDialog(selectedPet);
     }
     
     private void handleViewDetails(Pet pet) {
@@ -443,33 +447,6 @@ public class UserDashboardController {
         }
     }
     
-    /**
-     * Start a background timer to check session validity every 30 seconds
-     * Automatically redirects to login screen if session expires
-     */
-    private void startSessionChecker() {
-        sessionCheckTimer = UIUtils.createSessionChecker(() -> {
-            try {
-                petClientService.getAllPets();
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
-        });
-    }
-    
-    @FXML
-    private void handleLogout() {
-        if (sessionCheckTimer != null) {
-            sessionCheckTimer.cancel();
-        }
-        FurEverApp.clearAuth();
-        try {
-            FurEverApp.showLoginScreen();
-        } catch (IOException e) {
-            UIUtils.showError(statusLabel, "שגיאה בהתנתקות: " + e.getMessage());
-        }
-    }
-    
     private void showPetDetails(Pet pet) {
         UIUtils.showPetDetails(pet);
     }
@@ -486,6 +463,9 @@ public class UserDashboardController {
             stage.setTitle("בקשת אימוץ - " + pet.getName());
             stage.setScene(new Scene(root, 400, 350));
             stage.showAndWait();
+            
+            // Refresh pets after dialog closes
+            loadPets();
         } catch (IOException e) {
             UIUtils.showError(statusLabel, "שגיאה בפתיחת חלון בקשת אימוץ");
         }

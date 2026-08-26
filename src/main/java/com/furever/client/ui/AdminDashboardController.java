@@ -13,6 +13,7 @@ import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.control.TableRow;
+import javafx.scene.control.TabPane;
 import java.io.IOException;
 import java.util.List;
 import java.util.Timer;
@@ -27,10 +28,7 @@ import java.util.TimerTask;
  * - Full access to all system information (admin privileges)
  * Automatic session validity checking and redirecting to login on session expiration
  */
-public class AdminDashboardController {
-    
-    @FXML
-    private Label welcomeLabel;
+public class AdminDashboardController extends BaseDashboardController {
     
     @FXML
     private TabPane mainTabPane;
@@ -114,18 +112,17 @@ public class AdminDashboardController {
     private TextArea requestsStatusLabel;
     
     private UserClientService userClientService;
-    private PetClientService petClientService;
     private AdoptionRequestClientService adoptionRequestClientService;
     
     private ObservableList<User> usersList;
     private ObservableList<Pet> petsList;
     private ObservableList<AdoptionRequest> requestsList;
-    private Timer sessionCheckTimer;
     
     @FXML
     public void initialize() {
+        initializeBase();
+        
         this.userClientService = new UserClientService();
-        this.petClientService = new PetClientService();
         this.adoptionRequestClientService = new AdoptionRequestClientService();
         
         this.usersList = FXCollections.observableArrayList();
@@ -188,8 +185,6 @@ public class AdminDashboardController {
             welcomeLabel.setText("שלום, " + currentUser.getFullName() + " (מנהל)");
         }
         
-        startSessionChecker();
-        
         loadAllData();
     }
     
@@ -200,39 +195,30 @@ public class AdminDashboardController {
     }
     
     private void loadUsers() {
-        usersStatusLabel.clear();
-        try {
+        loadDataWithHandling(() -> {
             List<User> users = userClientService.getAllUsers();
             usersList.clear();
             usersList.addAll(users);
-            UIUtils.showInfo(usersStatusLabel, "נטענו " + users.size() + " משתמשים");
-        } catch (IOException e) {
-            UIUtils.showError(usersStatusLabel, e.getMessage());
-        }
+            return users.size();
+        }, "נטענו ", "שגיאה בטעינת משתמשים: ", usersStatusLabel);
     }
     
     private void loadPets() {
-        petsStatusLabel.clear();
-        try {
+        loadDataWithHandling(() -> {
             List<Pet> pets = petClientService.getAllPets();
             petsList.clear();
             petsList.addAll(pets);
-            UIUtils.showInfo(petsStatusLabel, "נטענו " + pets.size() + " חיות מחמד");
-        } catch (IOException e) {
-            UIUtils.showError(petsStatusLabel, e.getMessage());
-        }
+            return pets.size();
+        }, "נטענו ", "שגיאה בטעינת חיות מחמד: ", petsStatusLabel);
     }
     
     private void loadRequests() {
-        requestsStatusLabel.clear();
-        try {
+        loadDataWithHandling(() -> {
             List<AdoptionRequest> requests = adoptionRequestClientService.getAllRequests();
             requestsList.clear();
             requestsList.addAll(requests);
-            UIUtils.showInfo(requestsStatusLabel, "נטענו " + requests.size() + " בקשות");
-        } catch (IOException e) {
-            UIUtils.showError(requestsStatusLabel, e.getMessage());
-        }
+            return requests.size();
+        }, "נטענו ", "שגיאה בטעינת בקשות: ", requestsStatusLabel);
     }
     
     @FXML
@@ -465,28 +451,5 @@ public class AdminDashboardController {
     
     private void showPetDetails(Pet pet) {
         UIUtils.showPetDetails(pet);
-    }
-    
-    private void startSessionChecker() {
-        sessionCheckTimer = UIUtils.createSessionChecker(() -> {
-            try {
-                userClientService.getAllUsers();
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
-        });
-    }
-
-    @FXML
-    private void handleLogout() {
-        if (sessionCheckTimer != null) {
-            sessionCheckTimer.cancel();
-        }
-        FurEverApp.clearAuth();
-        try {
-            FurEverApp.showLoginScreen();
-        } catch (IOException e) {
-            UIUtils.showError(usersStatusLabel, "שגיאה בהתנתקות: " + e.getMessage());
-        }
     }
 }
