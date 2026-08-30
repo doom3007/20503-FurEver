@@ -181,9 +181,9 @@ public class PetDAO extends BaseDAO {
     }
     
     public boolean addPet(Pet pet) throws SQLException {
-        String query = "INSERT INTO Pet (name, categoryID, age, gender, description, imagePath, status, " +
+        String query = "INSERT INTO Pet (name, categoryID, age, gender, description, status, " +
                       "publishDate, ownerName, ownerPhone, ownerEmail) " +
-                      "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+                      "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
         
         try (Connection conn = DatabaseConnection.getConnection();
              PreparedStatement pstmt = conn.prepareStatement(query, Statement.RETURN_GENERATED_KEYS)) {
@@ -193,12 +193,11 @@ public class PetDAO extends BaseDAO {
             pstmt.setInt(3, pet.getAge());
             pstmt.setString(4, pet.getGender());
             pstmt.setString(5, pet.getDescription());
-            pstmt.setString(6, pet.getImagePath());
-            pstmt.setString(7, pet.getStatus());
-            pstmt.setDate(8, Date.valueOf(pet.getPublishDate()));
-            pstmt.setString(9, pet.getOwnerName());
-            pstmt.setString(10, pet.getOwnerPhone());
-            pstmt.setString(11, pet.getOwnerEmail());
+            pstmt.setString(6, pet.getStatus());
+            pstmt.setDate(7, Date.valueOf(pet.getPublishDate()));
+            pstmt.setString(8, pet.getOwnerName());
+            pstmt.setString(9, pet.getOwnerPhone());
+            pstmt.setString(10, pet.getOwnerEmail());
             
             int affectedRows = pstmt.executeUpdate();
             
@@ -215,7 +214,7 @@ public class PetDAO extends BaseDAO {
     
     public boolean updatePet(Pet pet) throws SQLException {
         String query = "UPDATE Pet SET name = ?, categoryID = ?, age = ?, gender = ?, " +
-                      "description = ?, imagePath = ?, status = ?, ownerName = ?, " +
+                      "description = ?, status = ?, ownerName = ?, " +
                       "ownerPhone = ?, ownerEmail = ? WHERE petID = ?";
         
         try (Connection conn = DatabaseConnection.getConnection();
@@ -226,12 +225,11 @@ public class PetDAO extends BaseDAO {
             pstmt.setInt(3, pet.getAge());
             pstmt.setString(4, pet.getGender());
             pstmt.setString(5, pet.getDescription());
-            pstmt.setString(6, pet.getImagePath());
-            pstmt.setString(7, pet.getStatus());
-            pstmt.setString(8, pet.getOwnerName());
-            pstmt.setString(9, pet.getOwnerPhone());
-            pstmt.setString(10, pet.getOwnerEmail());
-            pstmt.setInt(11, pet.getPetID());
+            pstmt.setString(6, pet.getStatus());
+            pstmt.setString(7, pet.getOwnerName());
+            pstmt.setString(8, pet.getOwnerPhone());
+            pstmt.setString(9, pet.getOwnerEmail());
+            pstmt.setInt(10, pet.getPetID());
             
             return pstmt.executeUpdate() > 0;
         }
@@ -287,7 +285,6 @@ public class PetDAO extends BaseDAO {
         pet.setAge(rs.getInt("age"));
         pet.setGender(rs.getString("gender"));
         pet.setDescription(rs.getString("description"));
-        pet.setImagePath(rs.getString("imagePath"));
         pet.setStatus(rs.getString("status"));
         pet.setPublishDate(rs.getDate("publishDate").toLocalDate());
         pet.setOwnerName(rs.getString("ownerName"));

@@ -19,7 +19,6 @@ CREATE TABLE IF NOT EXISTS Pet (
     age INT NOT NULL,
     gender VARCHAR(20) NOT NULL,
     description TEXT,
-    imagePath VARCHAR(255),
     status VARCHAR(20) NOT NULL DEFAULT 'זמינה',
     publishDate DATE NOT NULL,
     ownerName VARCHAR(100) NOT NULL,
@@ -76,8 +75,8 @@ INSERT INTO User (username, password, fullName, email, phone, isAdmin, registrat
 ('test2', '$2a$12$gWxSqmmrEkZWo/60SL51UO5bE9btZ/XupIK.s7yUUatsyCV3r82RC', 'a simple test2 user', 'test2@user.com', '0500000002', FALSE, CURDATE());
 
 -- Insert sample pet for testing (owned by test1)
-INSERT INTO Pet (name, categoryID, age, gender, description, imagePath, status, publishDate, ownerName, ownerPhone, ownerEmail) VALUES
-("ג'ינג'ר", 2, 9, 'נקבה', "חתולה ג'ינג'ית היפראקטיבית", null, 'זמינה', CURDATE(), 'a simple test1 user', '0500000001', 'test1@user.com');
+INSERT INTO Pet (name, categoryID, age, gender, description, status, publishDate, ownerName, ownerPhone, ownerEmail) VALUES
+("ג'ינג'ר", 2, 9, 'נקבה', "חתולה ג'ינג'ית היפראקטיבית", 'זמינה', CURDATE(), 'a simple test1 user', '0500000001', 'test1@user.com');
 
 -- Insert sample adoption request from test2 for the pet
 -- Use a subquery to get the specific pet we just inserted to ensure correct petID

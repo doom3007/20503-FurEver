@@ -38,7 +38,7 @@ public class FurEverApp extends Application {
         LoginController controller = loader.getController();
         controller.setMainApp(instance);
         
-        Scene scene = new Scene(root, 400, 300);
+        Scene scene = new Scene(root, 450, 350);
         primaryStage.setScene(scene);
         primaryStage.setResizable(false);
     }
@@ -47,7 +47,7 @@ public class FurEverApp extends Application {
         FXMLLoader loader = new FXMLLoader(FurEverApp.class.getResource("/fxml/user-dashboard.fxml"));
         Parent root = loader.load();
         
-        Scene scene = new Scene(root, 1000, 700);
+        Scene scene = new Scene(root, 1100, 750);
         primaryStage.setScene(scene);
         primaryStage.setResizable(true);
     }
@@ -56,7 +56,7 @@ public class FurEverApp extends Application {
         FXMLLoader loader = new FXMLLoader(FurEverApp.class.getResource("/fxml/admin-dashboard.fxml"));
         Parent root = loader.load();
         
-        Scene scene = new Scene(root, 1000, 700);
+        Scene scene = new Scene(root, 1100, 750);
         primaryStage.setScene(scene);
         primaryStage.setResizable(true);
     }

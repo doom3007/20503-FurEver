@@ -98,7 +98,8 @@ public class LoginController {
             Stage stage = new Stage();
             stage.initModality(Modality.APPLICATION_MODAL);
             stage.setTitle("הרשמה");
-            stage.setScene(new Scene(root, 400, 450));
+            stage.setScene(new Scene(root, 450, 500));
+            stage.setResizable(false);
             stage.showAndWait();
             
             if (controller.isRegistrationSuccessful()) {

@@ -10,7 +10,6 @@ public class Pet {
     private int age;
     private String gender;
     private String description;
-    private String imagePath;
     private String status;
     private LocalDate publishDate;
     private String ownerName;
@@ -21,14 +20,13 @@ public class Pet {
     }
     
     public Pet(String name, int categoryID, int age, String gender, String description, 
-                String imagePath, String status, LocalDate publishDate, 
+                String status, LocalDate publishDate, 
                 String ownerName, String ownerPhone, String ownerEmail) {
         this.name = name;
         this.categoryID = categoryID;
         this.age = age;
         this.gender = gender;
         this.description = description;
-        this.imagePath = imagePath;
         this.status = status;
         this.publishDate = publishDate;
         this.ownerName = ownerName;
@@ -90,14 +88,6 @@ public class Pet {
     
     public void setDescription(String description) {
         this.description = description;
-    }
-    
-    public String getImagePath() {
-        return imagePath;
-    }
-    
-    public void setImagePath(String imagePath) {
-        this.imagePath = imagePath;
     }
     
     public String getStatus() {

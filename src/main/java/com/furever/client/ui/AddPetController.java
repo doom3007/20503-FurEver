@@ -37,9 +37,6 @@ public class AddPetController {
     private TextArea descriptionArea;
     
     @FXML
-    private TextField imagePathField;
-    
-    @FXML
     private TextField ownerNameField;
     
     @FXML
@@ -90,7 +87,6 @@ public class AddPetController {
         String ageText = ageField.getText();
         String gender = genderComboBox.getValue();
         String description = descriptionArea.getText();
-        String imagePath = imagePathField.getText();
         String ownerName = ownerNameField.getText();
         String ownerPhone = ownerPhoneField.getText();
         String ownerEmail = ownerEmailField.getText();
@@ -130,7 +126,6 @@ public class AddPetController {
             pet.setAge(age);
             pet.setGender(gender);
             pet.setDescription(description.isEmpty() ? null : description);
-            pet.setImagePath(imagePath.isEmpty() ? null : imagePath);
             pet.setStatus("זמינה");
             pet.setPublishDate(LocalDate.now());
             pet.setOwnerName(ownerName);

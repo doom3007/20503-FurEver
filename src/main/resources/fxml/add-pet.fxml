@@ -36,10 +36,6 @@
             </HBox>
             <Label text="תיאור החיה:"/>
             <TextArea fx:id="descriptionArea" prefRowCount="3" nodeOrientation="RIGHT_TO_LEFT"/>
-            <HBox spacing="10" alignment="CENTER" nodeOrientation="RIGHT_TO_LEFT">
-                <Label text="נתיב לתמונה:" prefWidth="100"/>
-                <TextField fx:id="imagePathField" HBox.hgrow="ALWAYS" nodeOrientation="RIGHT_TO_LEFT"/>
-            </HBox>
             
             <Label text="פרטי בעלים" style="-fx-font-weight: bold;"/>
             <HBox spacing="10" alignment="CENTER" nodeOrientation="RIGHT_TO_LEFT">

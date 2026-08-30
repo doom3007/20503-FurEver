@@ -3,7 +3,6 @@ package com.furever.client.ui;
 import com.furever.client.FurEverApp;
 import com.furever.client.logic.AdoptionRequestClientService;
 import com.furever.client.logic.CategoryClientService;
-import com.furever.client.logic.PetClientService;
 import com.furever.common.models.AdoptionRequest;
 import com.furever.common.models.Category;
 import com.furever.common.models.Pet;
@@ -16,7 +15,6 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
-import javafx.scene.control.ButtonBar;
 import javafx.scene.layout.VBox;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
@@ -24,9 +22,6 @@ import java.io.IOException;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
-import java.util.Optional;
-import java.util.Timer;
-import java.util.TimerTask;
 
 /**
  * Controller class for regular user dashboard interface
@@ -176,6 +171,32 @@ public class UserDashboardController extends BaseDashboardController {
         petsTableView.setItems(petsList);
         requestsTableView.setItems(requestsList);
         
+        // Add selection listener to enable/disable adoption button
+        petsTableView.getSelectionModel().selectedItemProperty().addListener((obs, oldSelection, newSelection) -> {
+            if (newSelection != null) {
+                User currentUser = FurEverApp.getCurrentUser();
+                if (currentUser != null && newSelection.getOwnerEmail().equals(currentUser.getEmail())) {
+                    // User owns this pet - disable adoption button
+                    sendRequestButton.setDisable(true);
+                    sendRequestButton.setStyle("-fx-background-color: #95a5a6; -fx-text-fill: white; -fx-opacity: 0.5;");
+                    UIUtils.showInfo(statusLabel, "לא ניתן לאמץ את חיית המחמד שלך עצמך");
+                } else {
+                    // User doesn't own this pet - enable adoption button
+                    sendRequestButton.setDisable(false);
+                    sendRequestButton.setStyle("-fx-background-color: #f39c12; -fx-text-fill: white;");
+                }
+            } else {
+                // No selection - disable adoption button
+                sendRequestButton.setDisable(true);
+                sendRequestButton.setStyle("-fx-background-color: #95a5a6; -fx-text-fill: white; -fx-opacity: 0.5;");
+            }
+        });
+        
+        // Initially disable the adoption button but make it visible
+        sendRequestButton.setDisable(true);
+        sendRequestButton.setStyle("-fx-background-color: #95a5a6; -fx-text-fill: white; -fx-opacity: 0.5;");
+        sendRequestButton.setVisible(true);
+        
         petsTableView.setRowFactory(tv -> {
             TableRow<Pet> row = new TableRow<>();
             row.setOnMouseClicked(event -> {
@@ -184,6 +205,29 @@ public class UserDashboardController extends BaseDashboardController {
                     handleViewDetails(selectedPet);
                 }
             });
+            
+            // Visual indication for owned pets - update on each update
+            row.itemProperty().addListener((obs, oldPet, newPet) -> {
+                updateRowStyle(row, newPet);
+            });
+            
+            // Handle selection state to maintain dark text visibility
+            row.selectedProperty().addListener((obs, wasSelected, isSelected) -> {
+                Pet pet = row.getItem();
+                if (pet != null) {
+                    User currentUser = FurEverApp.getCurrentUser();
+                    if (currentUser != null && pet.getOwnerEmail().equals(currentUser.getEmail())) {
+                        // Keep dark text for owned pets regardless of selection state
+                        row.setStyle("-fx-background-color: #ffebee; -fx-text-fill: #8b0000;");
+                    } else {
+                        // Default selection styling for non-owned pets
+                        row.setStyle("");
+                    }
+                } else {
+                    row.setStyle("");
+                }
+            });
+            
             return row;
         });
         
@@ -219,6 +263,21 @@ public class UserDashboardController extends BaseDashboardController {
             } else if (newTab != null && newTab.getText().equals("חיות מחמד")) {
                 viewDetailsButton.setVisible(true);
                 sendRequestButton.setVisible(true);
+                // Reset button state for pets tab
+                Pet selectedPet = petsTableView.getSelectionModel().getSelectedItem();
+                if (selectedPet != null) {
+                    User currentUser = FurEverApp.getCurrentUser();
+                    if (currentUser != null && selectedPet.getOwnerEmail().equals(currentUser.getEmail())) {
+                        sendRequestButton.setDisable(true);
+                        sendRequestButton.setStyle("-fx-background-color: #95a5a6; -fx-text-fill: white; -fx-opacity: 0.5;");
+                    } else {
+                        sendRequestButton.setDisable(false);
+                        sendRequestButton.setStyle("-fx-background-color: #f39c12; -fx-text-fill: white;");
+                    }
+                } else {
+                    sendRequestButton.setDisable(true);
+                    sendRequestButton.setStyle("-fx-background-color: #95a5a6; -fx-text-fill: white; -fx-opacity: 0.5;");
+                }
                 viewRequestDetailsButton.setVisible(false);
                 approveRequestButton.setVisible(false);
                 rejectRequestButton.setVisible(false);
@@ -229,7 +288,14 @@ public class UserDashboardController extends BaseDashboardController {
         approveRequestButton.setVisible(false);
         rejectRequestButton.setVisible(false);
         viewRequestDetailsButton.setVisible(false);
-        sendRequestButton.setVisible(false);
+        
+        // Set initial visibility based on the default tab (pets tab)
+        Tab initialTab = mainTabPane.getSelectionModel().getSelectedItem();
+        if (initialTab != null && initialTab.getText().equals("חיות מחמד")) {
+            sendRequestButton.setVisible(true);
+        } else {
+            sendRequestButton.setVisible(false);
+        }
     }
     
     private void loadCategories() {
@@ -249,6 +315,13 @@ public class UserDashboardController extends BaseDashboardController {
             List<Pet> pets = petClientService.getAllPets();
             petsList.clear();
             petsList.addAll(pets);
+            
+            // Apply styling to owned pets after loading
+            User currentUser = FurEverApp.getCurrentUser();
+            if (currentUser != null) {
+                petsTableView.refresh(); // Refresh to apply row styling
+            }
+            
             return pets.size();
         }, "נמצאו ", "שגיאה בטעינת חיות מחמד: ", statusLabel);
     }
@@ -438,7 +511,8 @@ public class UserDashboardController extends BaseDashboardController {
             Stage stage = new Stage();
             stage.initModality(Modality.APPLICATION_MODAL);
             stage.setTitle("הוספת מודעת מסירה");
-            stage.setScene(new Scene(root, 500, 600));
+            stage.setScene(new Scene(root, 550, 650));
+            stage.setResizable(false);
             stage.showAndWait();
             
             loadPets();
@@ -461,13 +535,32 @@ public class UserDashboardController extends BaseDashboardController {
             Stage stage = new Stage();
             stage.initModality(Modality.APPLICATION_MODAL);
             stage.setTitle("בקשת אימוץ - " + pet.getName());
-            stage.setScene(new Scene(root, 400, 350));
+            stage.setScene(new Scene(root, 450, 400));
+            stage.setResizable(false);
             stage.showAndWait();
             
             // Refresh pets after dialog closes
             loadPets();
         } catch (IOException e) {
             UIUtils.showError(statusLabel, "שגיאה בפתיחת חלון בקשת אימוץ");
+        }
+    }
+    
+    /**
+     * Update row styling based on pet ownership
+     * Owned pets are styled differently to indicate they cannot be adopted by the current user
+     */
+    private void updateRowStyle(TableRow<Pet> row, Pet pet) {
+        if (pet != null) {
+            User currentUser = FurEverApp.getCurrentUser();
+            if (currentUser != null && pet.getOwnerEmail().equals(currentUser.getEmail())) {
+                // Style owned pets with red background and dark text for better readability
+                row.setStyle("-fx-background-color: #ffebee; -fx-text-fill: #8b0000;");
+            } else {
+                row.setStyle("");
+            }
+        } else {
+            row.setStyle("");
         }
     }
 }

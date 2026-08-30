@@ -19,6 +19,7 @@ import java.security.SecureRandom;
 import java.io.*;
 import java.net.InetSocketAddress;
 import java.net.URLDecoder;
+import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.sql.SQLException;
 import java.time.LocalDate;
@@ -390,7 +391,6 @@ public class FurEverServer {
             try {
                 String method = exchange.getRequestMethod();
                 String path = exchange.getRequestURI().getPath();
-                System.err.println("SERVER: Received " + method + " request to " + path);
 
                 switch (method) {
                     case "GET":
@@ -445,6 +445,8 @@ public class FurEverServer {
                             handleAddRequest(exchange, userEmail);
                         } catch (IOException e) {
                             AuthUtil.sendUnauthorized(exchange);
+                        } catch (Exception e) {
+                            sendResponse(exchange, 500, "{\"error\":\"שגיאה פנימית בשרת\"}");
                         }
                         break;
                     case "PUT":
@@ -533,15 +535,21 @@ public class FurEverServer {
                 String body = readRequestBody(exchange);
                 var request = gson.fromJson(body, AdoptionRequest.class);
                 request.setRequesterEmail(userEmail);
-                System.err.println("SERVER: Adding adoption request for pet " + request.getPetID() + " by user: " + userEmail);
-                adoptionRequestService.addRequest(request);
-                sendResponse(exchange, 201, gson.toJson(request));
+                boolean success = adoptionRequestService.addRequest(request);
+                if (success) {
+                    sendResponse(exchange, 201, gson.toJson(request));
+                } else {
+                    sendResponse(exchange, 400, "{\"error\":\"נכשל ביצירת הבקשה\"}");
+                }
             } catch (SQLException e) {
-                e.printStackTrace();
-                sendResponse(exchange, 500, "{\"error\":\"שגיאה בשרת: " + e.getMessage() + "\"}");
+                System.err.println("SERVER: SQLException in handleAddRequest: " + e.getMessage());
+                // URL encode the error message to handle Hebrew characters properly
+                String encodedError = URLEncoder.encode(e.getMessage(), StandardCharsets.UTF_8);
+                sendResponse(exchange, 500, "{\"error\":\"" + encodedError + "\"}");
             } catch (Exception e) {
+                System.err.println("SERVER: Unexpected error in handleAddRequest: " + e.getMessage());
                 e.printStackTrace();
-                sendResponse(exchange, 500, "{\"error\":\"שגיאה בשרת: " + e.getMessage() + "\"}");
+                sendResponse(exchange, 500, "{\"error\":\"שגיאה פנימית בשרת\"}");
             }
         }
         
