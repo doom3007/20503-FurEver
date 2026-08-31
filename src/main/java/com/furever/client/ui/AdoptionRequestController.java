@@ -89,7 +89,7 @@ public class AdoptionRequestController {
             request.setPetID(pet.getPetID());
             request.setMessage(message.isEmpty() ? null : message);
             request.setRequestDate(LocalDate.now());
-            request.setRequestStatus("ממתינה"); // Changed from "נשלחה" to "ממתינה"
+            request.setRequestStatus("ממתינה");
             request.setRequesterName(requesterName);
             request.setRequesterPhone(requesterPhone);
             request.setRequesterEmail(requesterEmail);
@@ -116,22 +116,22 @@ public class AdoptionRequestController {
         } catch (IOException e) {
             System.err.println("CLIENT: Error sending request: " + e.getMessage());
             e.printStackTrace();
-            // Try to extract and decode the actual error message from the response
+
             String errorMessage = e.getMessage();
             if (errorMessage != null && errorMessage.contains("HTTP 500")) {
                 try {
-                    // Extract JSON error from the response
+
                     int jsonStart = errorMessage.indexOf("{");
                     int jsonEnd = errorMessage.lastIndexOf("}");
                     if (jsonStart != -1 && jsonEnd != -1) {
                         String jsonError = errorMessage.substring(jsonStart, jsonEnd + 1);
-                        // Simple parsing to extract the error message
+
                         if (jsonError.contains("\"error\"")) {
                             int errorStart = jsonError.indexOf("\"error\"") + 8;
                             int errorEnd = jsonError.indexOf("\"", errorStart + 1);
                             if (errorStart != -1 && errorEnd != -1) {
                                 String actualError = jsonError.substring(errorStart + 1, errorEnd);
-                                // Decode URL encoding if present
+
                                 actualError = URLDecoder.decode(actualError, StandardCharsets.UTF_8);
                                 UIUtils.showError(messageLabel, actualError);
                                 return;
@@ -144,7 +144,7 @@ public class AdoptionRequestController {
                     return;
                 }
             }
-            // Fallback to displaying the original error message
+
             UIUtils.showError(messageLabel, errorMessage);
         }
     }

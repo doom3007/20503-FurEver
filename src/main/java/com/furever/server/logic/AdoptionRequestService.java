@@ -65,14 +65,17 @@ public class AdoptionRequestService extends BaseService {
     
     /**
      * Approve an adoption request and handle related state changes
-     * - Validates pet ownership
-     * - Checks for existing approved requests
-     * - Rejects other pending requests for the same pet
-     * - Updates pet status to adopted
+     * This method performs a multi-step approval process:
+     * 1. Validates that the approving user owns the pet
+     * 2. Checks if there's already an approved request for this pet (prevents duplicate approvals)
+     * 3. Rejects all other pending requests for the same pet (maintains exclusivity)
+     * 4. Updates the request status to "approved" (אושרה)
+     * 5. Updates the pet status to "adopted" (אומצה) to prevent further requests
+     * 
      * @param requestID ID of the request to approve
      * @param userEmail Email of the user approving (must be pet owner)
-     * @return true if approval succeeded
-     * @throws SQLException if validation fails or database error occurs
+     * @return true if approval succeeded, false if request not found
+     * @throws SQLException if validation fails (not owner, duplicate approval) or database error occurs
      */
     public boolean approveRequest(int requestID, String userEmail) throws SQLException {
         AdoptionRequest request = adoptionRequestDAO.getRequestById(requestID);

@@ -8,7 +8,7 @@ Users can view available pets, publish pets for adoption, and send adoption requ
 - **Client**: JavaFX with Java 17
 - **Server**: Java's built-in HTTP server with REST API
 - **Database**: MySQL 8.0+
-- **Build**: (Apache for portability) Maven (using local mvn - Maven Daemon for faster builds)
+- **Build**: Maven (Apache Maven 3.9.16 for portability)
 - **Architecture**: Client-Server with HTTP communication
 - **Authentication**: JWT (JSON Web Tokens) for secure API access
 - **Security**: BCrypt for password hashing
@@ -21,6 +21,7 @@ Users can view available pets, publish pets for adoption, and send adoption requ
 
 ## Development Tools
 - **IDEs**: VSCode, IntelliJ IDEA, Eclipse
+- **Build Tool**: Maven (Apache Maven 3.9.16 for portability)
 - **Linting**: Maven compiler plugin (Java)
 - **Version Control**: Git
 

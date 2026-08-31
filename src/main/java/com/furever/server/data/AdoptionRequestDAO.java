@@ -134,7 +134,7 @@ public class AdoptionRequestDAO extends BaseDAO {
             }
         }
         
-        // Check if the requester is also the pet owner (prevent self-adoption)
+
         String ownerCheckQuery = "SELECT COUNT(*) FROM Pet WHERE petID = ? AND ownerEmail = ?";
         try (Connection conn = DatabaseConnection.getConnection();
              PreparedStatement ownerCheckPstmt = conn.prepareStatement(ownerCheckQuery)) {
@@ -146,7 +146,7 @@ public class AdoptionRequestDAO extends BaseDAO {
             }
         }
         
-        // Check if user already has a pending request for this pet (prevent duplicate requests)
+
         String checkQuery = "SELECT COUNT(*) FROM AdoptionRequest WHERE petID = ? AND requesterEmail = ?";
         try (Connection conn = DatabaseConnection.getConnection();
              PreparedStatement checkPstmt = conn.prepareStatement(checkQuery)) {
@@ -176,7 +176,7 @@ public class AdoptionRequestDAO extends BaseDAO {
             int affectedRows = pstmt.executeUpdate();
             
             if (affectedRows > 0) {
-                // Retrieve auto-generated requestID and set it in the request object
+
                 ResultSet generatedKeys = pstmt.getGeneratedKeys();
                 if (generatedKeys.next()) {
                     request.setRequestID(generatedKeys.getInt(1));

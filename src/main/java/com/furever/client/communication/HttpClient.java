@@ -183,7 +183,7 @@ public class HttpClient {
                   .append("=")
                   .append(URLEncoder.encode(entry.getValue(), StandardCharsets.UTF_8));
             } catch (Exception e) {
-                // Fallback to unencoded if encoding fails
+
                 sb.append(entry.getKey()).append("=").append(entry.getValue());
             }
         }

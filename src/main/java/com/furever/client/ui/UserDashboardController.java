@@ -27,11 +27,32 @@ import java.util.List;
  * Controller class for regular user dashboard interface
  * Manages functionality for regular user dashboard including:
  * - Viewing available pets for adoption
- * - Searching and filtering pets by various criteria
- * - Sending adoption requests to pet owners
- * - Managing adoption requests received from other users
- * - Adding new pet adoption listings
- * Automatic session validity checking and redirecting to login on session expiration
+ * - Searching and filtering pets by various criteria (name, category, age, gender)
+ * - Viewing own adoption requests and their status (sent, approved, rejected)
+ * - Sending adoption requests for available pets (prevents self-adoption)
+ * - Adding new pet publication (as pet owner) with owner information auto-filled
+ * - Deleting own adoption requests (before approval)
+ * - Viewing pet details
+ * - Request details management
+ * 
+ * Privilege handling:
+ * - Users can only send adoption requests for pets they don't own
+ * - Users can only view adoption requests where they are the requester or pet owner
+ * - Users can only delete their own pending requests
+ * - Users can only add pets (they become the owner automatically)
+ * - Users cannot approve/reject requests (admin only)
+ * 
+ * Session management:
+ * - Automatic session validity checking every 30 seconds
+ * - Redirects to login screen on session expiration
+ * - Clears authentication state on logout
+ * 
+ * UI features:
+ * - Tab-based interface (pets tab and requests tab)
+ * - Owned pets are visually indicated with red background and disabled adoption button
+ * - Adoption button is disabled when no pet is selected
+ * - Real-time table refresh after data changes
+ * - Status messages displayed in Hebrew for user convenience
  */
 public class UserDashboardController extends BaseDashboardController {
     
@@ -171,28 +192,25 @@ public class UserDashboardController extends BaseDashboardController {
         petsTableView.setItems(petsList);
         requestsTableView.setItems(requestsList);
         
-        // Add selection listener to enable/disable adoption button
+
         petsTableView.getSelectionModel().selectedItemProperty().addListener((obs, oldSelection, newSelection) -> {
             if (newSelection != null) {
                 User currentUser = FurEverApp.getCurrentUser();
                 if (currentUser != null && newSelection.getOwnerEmail().equals(currentUser.getEmail())) {
-                    // User owns this pet - disable adoption button
                     sendRequestButton.setDisable(true);
                     sendRequestButton.setStyle("-fx-background-color: #95a5a6; -fx-text-fill: white; -fx-opacity: 0.5;");
                     UIUtils.showInfo(statusLabel, "לא ניתן לאמץ את חיית המחמד שלך עצמך");
                 } else {
-                    // User doesn't own this pet - enable adoption button
                     sendRequestButton.setDisable(false);
                     sendRequestButton.setStyle("-fx-background-color: #f39c12; -fx-text-fill: white;");
                 }
             } else {
-                // No selection - disable adoption button
                 sendRequestButton.setDisable(true);
                 sendRequestButton.setStyle("-fx-background-color: #95a5a6; -fx-text-fill: white; -fx-opacity: 0.5;");
             }
         });
         
-        // Initially disable the adoption button but make it visible
+
         sendRequestButton.setDisable(true);
         sendRequestButton.setStyle("-fx-background-color: #95a5a6; -fx-text-fill: white; -fx-opacity: 0.5;");
         sendRequestButton.setVisible(true);
@@ -206,30 +224,21 @@ public class UserDashboardController extends BaseDashboardController {
                 }
             });
             
-            // Visual indication for owned pets - update on each update
+
             row.itemProperty().addListener((obs, oldPet, newPet) -> {
                 updateRowStyle(row, newPet);
             });
             
-            // Handle selection state to maintain dark text visibility
+
             row.selectedProperty().addListener((obs, wasSelected, isSelected) -> {
-                Pet pet = row.getItem();
-                if (pet != null) {
-                    User currentUser = FurEverApp.getCurrentUser();
-                    if (currentUser != null && pet.getOwnerEmail().equals(currentUser.getEmail())) {
-                        // Keep dark text for owned pets regardless of selection state
-                        row.setStyle("-fx-background-color: #ffebee; -fx-text-fill: #8b0000;");
-                    } else {
-                        // Default selection styling for non-owned pets
-                        row.setStyle("");
-                    }
-                } else {
-                    row.setStyle("");
-                }
+                updateRowStyle(row, row.getItem());
             });
             
             return row;
         });
+        
+
+        petsTableView.getStylesheets().add(getClass().getResource("/css/table-styles.css").toExternalForm());
         
         requestsTableView.setRowFactory(tv -> {
             TableRow<AdoptionRequest> row = new TableRow<>();
@@ -248,7 +257,7 @@ public class UserDashboardController extends BaseDashboardController {
         loadPets();
         loadRequests();
         
-        // Add Enter key listeners for search fields
+
         searchNameField.setOnAction(event -> handleSearch());
         maxAgeField.setOnAction(event -> handleSearch());
         
@@ -263,7 +272,7 @@ public class UserDashboardController extends BaseDashboardController {
             } else if (newTab != null && newTab.getText().equals("חיות מחמד")) {
                 viewDetailsButton.setVisible(true);
                 sendRequestButton.setVisible(true);
-                // Reset button state for pets tab
+
                 Pet selectedPet = petsTableView.getSelectionModel().getSelectedItem();
                 if (selectedPet != null) {
                     User currentUser = FurEverApp.getCurrentUser();
@@ -289,7 +298,7 @@ public class UserDashboardController extends BaseDashboardController {
         rejectRequestButton.setVisible(false);
         viewRequestDetailsButton.setVisible(false);
         
-        // Set initial visibility based on the default tab (pets tab)
+
         Tab initialTab = mainTabPane.getSelectionModel().getSelectedItem();
         if (initialTab != null && initialTab.getText().equals("חיות מחמד")) {
             sendRequestButton.setVisible(true);
@@ -316,10 +325,9 @@ public class UserDashboardController extends BaseDashboardController {
             petsList.clear();
             petsList.addAll(pets);
             
-            // Apply styling to owned pets after loading
             User currentUser = FurEverApp.getCurrentUser();
             if (currentUser != null) {
-                petsTableView.refresh(); // Refresh to apply row styling
+                petsTableView.refresh();
             }
             
             return pets.size();
@@ -539,7 +547,7 @@ public class UserDashboardController extends BaseDashboardController {
             stage.setResizable(false);
             stage.showAndWait();
             
-            // Refresh pets after dialog closes
+
             loadPets();
         } catch (IOException e) {
             UIUtils.showError(statusLabel, "שגיאה בפתיחת חלון בקשת אימוץ");
@@ -554,10 +562,15 @@ public class UserDashboardController extends BaseDashboardController {
         if (pet != null) {
             User currentUser = FurEverApp.getCurrentUser();
             if (currentUser != null && pet.getOwnerEmail().equals(currentUser.getEmail())) {
-                // Style owned pets with red background and dark text for better readability
+
                 row.setStyle("-fx-background-color: #ffebee; -fx-text-fill: #8b0000;");
             } else {
-                row.setStyle("");
+
+                if (row.isSelected()) {
+                    row.setStyle("-fx-background-color: #e3f2fd; -fx-text-fill: #1565c0;");
+                } else {
+                    row.setStyle("");
+                }
             }
         } else {
             row.setStyle("");

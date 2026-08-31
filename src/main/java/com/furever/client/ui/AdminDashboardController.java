@@ -22,11 +22,32 @@ import java.util.TimerTask;
 /**
  * Controller class for admin dashboard interface
  * Manages functionality for admin dashboard including:
- * - User management: viewing list of all registered users
- * - Pet management: viewing, deleting inappropriate ads, updating status to adopted
+ * - User management: viewing list of all registered users with their details
+ * - Pet management: viewing all pets, deleting inappropriate ads, updating status to adopted
  * - Adoption request management: approving, rejecting, changing status, deleting requests
  * - Full access to all system information (admin privileges)
- * Automatic session validity checking and redirecting to login on session expiration
+ * 
+ * Privilege handling:
+ * - Admin can view all users (regular and admin accounts)
+ * - Admin can view all pets regardless of ownership
+ * - Admin can delete any pet (content moderation)
+ * - Admin can update pet status (mark as adopted/available)
+ * - Admin can approve/reject any adoption request
+ * - Admin can delete any adoption request
+ * - Admin can view all adoption requests in the system
+ * - Admin can change request status manually
+ * 
+ * Session management:
+ * - Automatic session validity checking every 30 seconds
+ * - Redirects to login screen on session expiration
+ * - Clears authentication state on logout
+ * 
+ * UI features:
+ * - Tab-based interface (users tab, pets tab, requests tab)
+ * - Confirmation dialogs for destructive operations (delete, approve, reject)
+ * - Status messages displayed in Hebrew for user convenience
+ * - Real-time table refresh after data changes
+ * - Separate status labels for each tab to show operation results
  */
 public class AdminDashboardController extends BaseDashboardController {
     

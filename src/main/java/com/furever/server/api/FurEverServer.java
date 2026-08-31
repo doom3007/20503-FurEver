@@ -543,7 +543,7 @@ public class FurEverServer {
                 }
             } catch (SQLException e) {
                 System.err.println("SERVER: SQLException in handleAddRequest: " + e.getMessage());
-                // URL encode the error message to handle Hebrew characters properly
+
                 String encodedError = URLEncoder.encode(e.getMessage(), StandardCharsets.UTF_8);
                 sendResponse(exchange, 500, "{\"error\":\"" + encodedError + "\"}");
             } catch (Exception e) {

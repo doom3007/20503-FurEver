@@ -13,6 +13,7 @@ import java.util.List;
  * Handles database operations for pets including CRUD operations, search, and filtering
  * Provides methods for pet management with category integration and ownership validation
  */
+@SuppressWarnings("unused") // Category and LocalDate imports are used in SQL queries and date conversion
 public class PetDAO extends BaseDAO {
     
     private CategoryDAO categoryDAO;
@@ -131,7 +132,6 @@ public class PetDAO extends BaseDAO {
      */
     public List<Pet> searchPets(String name, Integer categoryID, Integer maxAge, String gender) throws SQLException {
         List<Pet> pets = new ArrayList<>();
-        // Build base query with category join and status filter for available pets only
         StringBuilder query = new StringBuilder(
             "SELECT p.*, c.categoryName FROM Pet p " +
             "LEFT JOIN Category c ON p.categoryID = c.categoryID " +
@@ -140,10 +140,10 @@ public class PetDAO extends BaseDAO {
         
         List<Object> parameters = new ArrayList<>();
         
-        // Dynamically add WHERE clauses based on provided filters
+
         if (name != null && !name.isEmpty()) {
             query.append("AND p.name LIKE ? ");
-            parameters.add("%" + name + "%"); // Partial match for name search
+            parameters.add("%" + name + "%"); // Use LIKE with wildcards for partial name matching
         }
         
         if (categoryID != null) {
@@ -153,7 +153,7 @@ public class PetDAO extends BaseDAO {
         
         if (maxAge != null) {
             query.append("AND p.age <= ? ");
-            parameters.add(maxAge); // Include pets at or below max age
+            parameters.add(maxAge); // Filter for pets at or below specified age
         }
         
         if (gender != null && !gender.isEmpty()) {
@@ -161,12 +161,13 @@ public class PetDAO extends BaseDAO {
             parameters.add(gender);
         }
         
-        // Order by most recently published first
+
         query.append("ORDER BY p.publishDate DESC");
         
         try (Connection conn = DatabaseConnection.getConnection();
              PreparedStatement pstmt = conn.prepareStatement(query.toString())) {
             
+
             for (int i = 0; i < parameters.size(); i++) {
                 pstmt.setObject(i + 1, parameters.get(i));
             }
