@@ -10,17 +10,45 @@ import java.util.List;
 
 /**
  * Data Access Object for AdoptionRequest entity
- * Handles database operations for adoption requests including CRUD operations and status management
- * Provides methods for request validation, duplicate prevention, and status updates
+ * 
+ * <p>This DAO handles all database operations for adoption requests in the FurEver system.
+ * It provides CRUD operations, status management, and business rule enforcement at the database level.</p>
+ * 
+ * <p>Key features:</p>
+ * <ul>
+ *   <li>Self-adoption prevention: Validates that requester is not the pet owner</li>
+ *   <li>Duplicate request prevention: Checks for existing requests by same user for same pet</li>
+ *   <li>Status management: Updates request status with proper validation</li>
+ *   <li>Relationship handling: Joins with Pet table to include pet details in results</li>
+ *   <li>Atomic operations: Handles request approval/rejection with status synchronization</li>
+ * </ul>
+ * 
+ * <p>Database table: AdoptionRequest</p>
+ * <p>Related tables: Pet (for self-adoption check and details)</p>
+ * 
+ * @author FurEver Development Team
+ * @version 1.0
  */
 public class AdoptionRequestDAO extends BaseDAO {
     
     private PetDAO petDAO;
     
+    /**
+     * Constructs a new AdoptionRequestDAO with PetDAO dependency
+     */
     public AdoptionRequestDAO() {
         this.petDAO = new PetDAO();
     }
     
+    /**
+     * Retrieve all adoption requests from the database
+     * 
+     * <p>Performs a LEFT JOIN with the Pet table to include pet names and owner names
+     * in the results. Results are ordered by request date (newest first).</p>
+     * 
+     * @return List of all adoption requests with pet details
+     * @throws SQLException if database error occurs
+     */
     public List<AdoptionRequest> getAllRequests() throws SQLException {
         List<AdoptionRequest> requests = new ArrayList<>();
         String query = "SELECT ar.*, p.name as petName, p.ownerName as ownerName FROM AdoptionRequest ar " +
@@ -38,6 +66,16 @@ public class AdoptionRequestDAO extends BaseDAO {
         return requests;
     }
     
+    /**
+     * Retrieve all adoption requests for a specific pet
+     * 
+     * <p>Performs a LEFT JOIN with the Pet table to include pet details.
+     * Results are ordered by request date (newest first).</p>
+     * 
+     * @param petID The ID of the pet
+     * @return List of adoption requests for the specified pet
+     * @throws SQLException if database error occurs
+     */
     public List<AdoptionRequest> getRequestsByPetId(int petID) throws SQLException {
         List<AdoptionRequest> requests = new ArrayList<>();
         String query = "SELECT ar.*, p.name as petName, p.ownerName as ownerName FROM AdoptionRequest ar " +

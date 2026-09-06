@@ -139,6 +139,19 @@
                     </execution>
                 </executions>
             </plugin>
+            
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-javadoc-plugin</artifactId>
+                <version>3.6.0</version>
+                <configuration>
+                    <doclint>none</doclint>
+                    <show>private</show>
+                    <nohelp>true</nohelp>
+                    <outputDirectory>${project.build.directory}/javadoc</outputDirectory>
+                    <excludePackageNames>com.furever.installations</excludePackageNames>
+                </configuration>
+            </plugin>
         </plugins>
     </build>
 </project>

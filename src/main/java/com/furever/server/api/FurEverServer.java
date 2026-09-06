@@ -30,6 +30,26 @@ import java.util.Map;
  * Main HTTP server class for the FurEver application
  * Manages the REST API endpoints and handles HTTP requests
  * Uses Java's built-in HTTP server with JWT authentication
+ * 
+ * <p>This server provides a RESTful API for the pet adoption system with the following features:</p>
+ * <ul>
+ *   <li>JWT-based authentication with 24-hour token expiration</li>
+ *   <li>Role-based access control (admin vs regular users)</li>
+ *   <li>Dynamic admin code generation for secure admin registration</li>
+ *   <li>RESTful endpoints for pets, categories, adoption requests, and users</li>
+ *   <li>Comprehensive error handling with Hebrew error messages</li>
+ * </ul>
+ * 
+ * <p>Server endpoints:</p>
+ * <ul>
+ *   <li>PET: GET /api/pets, POST /api/pets, PUT /api/pets/{id}, DELETE /api/pets/{id}</li>
+ *   <li>CATEGORY: GET /api/categories</li>
+ *   <li>REQUEST: GET /api/requests, POST /api/requests, PUT /api/requests/{id}/approve</li>
+ *   <li>USER: GET /api/users, POST /api/users, POST /api/auth</li>
+ * </ul>
+ * 
+ * @author FurEver Development Team
+ * @version 1.0
  */
 @SuppressWarnings("unchecked")
 public class FurEverServer {
@@ -41,6 +61,14 @@ public class FurEverServer {
     private UserService userService;
     private String adminCode;
     
+    /**
+     * Constructs and initializes the FurEver HTTP server
+     * 
+     * <p>Sets up the server on port 8080, initializes Gson with LocalDate adapter,
+     * and creates service instances for business logic operations.</p>
+     * 
+     * @throws IOException if the server cannot be created on port 8080
+     */
     public FurEverServer() throws IOException {
         this.server = com.sun.net.httpserver.HttpServer.create(new InetSocketAddress(8080), 0);
         this.gson = new GsonBuilder()
@@ -55,6 +83,18 @@ public class FurEverServer {
         setupRoutes();
     }
     
+    /**
+     * Sets up the HTTP context routes for the REST API
+     * 
+     * <p>Maps URL paths to their respective handler classes:</p>
+     * <ul>
+     *   <li>/api/pets - Pet operations (GET, POST, PUT, DELETE)</li>
+     *   <li>/api/categories - Category operations (GET)</li>
+     *   <li>/api/requests - Adoption request operations (GET, POST, PUT, DELETE)</li>
+     *   <li>/api/users - User operations (GET, POST)</li>
+     *   <li>/api/auth - Authentication operations (POST)</li>
+     * </ul>
+     */
     private void setupRoutes() {
         server.createContext("/api/pets", new PetHandler());
         server.createContext("/api/categories", new CategoryHandler());
@@ -63,6 +103,12 @@ public class FurEverServer {
         server.createContext("/api/auth", new AuthHandler());
     }
     
+    /**
+     * Starts the HTTP server and displays startup information
+     * 
+     * <p>The server runs on port 8080 and displays the admin code for registration.
+     * The admin code is randomly generated each time the server starts for security.</p>
+     */
     public void start() {
         server.start();
         System.out.println("Server started on port 8080");
@@ -74,7 +120,13 @@ public class FurEverServer {
     
     /**
      * Generate a random 8-character admin code for user registration
-     * Uses cryptographically secure random number generator
+     * 
+     * <p>Uses cryptographically secure random number generator to create
+     * a unique admin code each time the server starts. This code is required
+     * during user registration to create admin accounts.</p>
+     * 
+     * <p>The code consists of uppercase letters (A-Z) and digits (0-9) only.</p>
+     * 
      * @return Random admin code consisting of uppercase letters and digits
      */
     private String generateAdminCode() {
@@ -87,6 +139,11 @@ public class FurEverServer {
         return code.toString();
     }
     
+    /**
+     * Returns the current admin code for this server instance
+     * 
+     * @return The randomly generated admin code
+     */
     public String getAdminCode() {
         return adminCode;
     }
